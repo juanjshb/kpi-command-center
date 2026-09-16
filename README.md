@@ -4,6 +4,14 @@ API funcional y dashboard HTML/JS para las tres páginas de referencia en `image
 
 El dashboard está en `dashboard/` y se sirve desde FastAPI en `/dashboard/`. Los contratos también están disponibles en OpenAPI y en [el mapa de integración](docs/dashboard-api.md).
 
+## Screenshots
+![Page 1](images/page1.jpg)
+
+![Page 2](images/page2.jpg)
+
+![Page 3](images/page3.jpg)
+
+
 ## Stack
 
 Python 3.11+, FastAPI, Pydantic v2, SQLAlchemy 2 síncrono con `psycopg2-binary`, PostgreSQL, Alembic, PyJWT y Bcrypt. La configuración usa `pydantic-settings` y `python-dotenv`.
