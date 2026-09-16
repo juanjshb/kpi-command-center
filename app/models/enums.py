@@ -1,0 +1,58 @@
+from enum import StrEnum
+
+
+class Role(StrEnum):
+    ADMIN = "ADMIN"
+    OPERATOR = "OPERATOR"
+    ANALYST = "ANALYST"
+
+
+class BranchStatus(StrEnum):
+    OPERATIVA = "OPERATIVA"
+    MANTENIMIENTO = "MANTENIMIENTO"
+    CERRADA = "CERRADA"
+
+
+class ATMType(StrEnum):
+    DISPENSADOR = "DISPENSADOR"
+    CDM_DEPOSITO = "CDM_DEPOSITO"
+
+
+class ATMStatus(StrEnum):
+    OPERATIVO = "OPERATIVO"
+    BAJO_EFECTIVO = "BAJO_EFECTIVO"
+    FUERA_DE_SERVICIO = "FUERA_DE_SERVICIO"
+    MANTENIMIENTO = "MANTENIMIENTO"
+
+
+class Severity(StrEnum):
+    BAJA = "BAJA"
+    MEDIA = "MEDIA"
+    ALTA = "ALTA"
+    CRITICA = "CRITICA"
+
+
+class IncidentStatus(StrEnum):
+    ABIERTA = "ABIERTA"
+    EN_PROCESO = "EN_PROCESO"
+    RESUELTA = "RESUELTA"
+    CANCELADA = "CANCELADA"
+
+
+class RefillStatus(StrEnum):
+    PROGRAMADA = "PROGRAMADA"
+    EN_TRANSITO = "EN_TRANSITO"
+    COMPLETADA = "COMPLETADA"
+    CANCELADA = "CANCELADA"
+
+
+class LocationType(StrEnum):
+    ATM = "ATM"
+    SUCURSAL = "SUCURSAL"
+
+
+class CandidateStatus(StrEnum):
+    PROPUESTA = "PROPUESTA"
+    EN_EVALUACION = "EN_EVALUACION"
+    APROBADA = "APROBADA"
+    DESCARTADA = "DESCARTADA"

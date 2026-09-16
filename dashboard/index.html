@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KPI Command Center | Login</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/dashboard/assets/css/dashboard.css">
+  <script defer src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script defer src="/dashboard/config.js"></script>
+  <script defer src="/dashboard/assets/js/app.js"></script>
+</head>
+<body class="login-body" data-page="login">
+  <main class="login-screen">
+    <section class="login-panel">
+      <div class="brand brand-large">
+        <span class="brand-mark">S</span>
+        <span>Scotiabank</span>
+      </div>
+      <p class="eyebrow">KPI Command Center</p>
+      <h1>Dominican Republic Operations</h1>
+      <p class="login-copy">ATM network, branch queues, market coverage and geospatial planning in one dashboard.</p>
+
+      <form id="login-form" class="login-form" autocomplete="on">
+        <label>
+          Email
+          <input name="username" type="email" value="admin@bank.com" autocomplete="username" required>
+        </label>
+        <label>
+          Password
+          <input name="password" type="password" value="admin123" autocomplete="current-password" required>
+        </label>
+        <button class="primary-button" type="submit">
+          <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+          Login
+        </button>
+        <p id="login-error" class="form-error" role="alert"></p>
+      </form>
+    </section>
+
+    <section class="login-preview" aria-label="Dashboard preview">
+      <div class="preview-card">
+        <span>Network coverage</span>
+        <strong>Live API</strong>
+        <div class="preview-line"></div>
+      </div>
+      <div class="preview-card">
+        <span>Cash alerts</span>
+        <strong>ATM status</strong>
+        <div class="preview-bars">
+          <i></i><i></i><i></i><i></i>
+        </div>
+      </div>
+      <div class="preview-map">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
