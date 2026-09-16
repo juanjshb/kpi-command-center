@@ -1,8 +1,16 @@
-# KPI Command Center — Backend
+# KPI Command Center
 
 API funcional y dashboard HTML/JS para las tres páginas de referencia en `images/`: operaciones ATM, sucursales y colas, y planificación geoespacial. Incluye **14 tablas PostgreSQL y 60 operaciones REST**, autenticación JWT, permisos por rol, migraciones y datos de demostración.
 
 El dashboard está en `dashboard/` y se sirve desde FastAPI en `/dashboard/`. Los contratos también están disponibles en OpenAPI y en [el mapa de integración](docs/dashboard-api.md).
+
+## Screenshots
+![Page 1](images/page1.jpg)
+
+![Page 2](images/page2.jpg)
+
+![Page 3](images/page3.jpg)
+
 
 ## Stack
 
