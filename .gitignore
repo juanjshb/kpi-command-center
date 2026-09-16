@@ -12,3 +12,5 @@ __pycache__/
 *.log
 .coverage
 htmlcov/
+sql/
+scripts/scrapers/
