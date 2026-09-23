@@ -1,0 +1,324 @@
+{
+  "google_maps_browser|scotiabank acropolis": {
+    "latitude": 18.4696667,
+    "longitude": -69.9395556,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Acr%C3%B3polis/@18.4696667,-69.9395556,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf89ef0afa83ef:0x62980067f7149ef!8m2!3d18.4696667!4d-69.9395556!16s%2Fg%2F11r3_jb28s?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Acr%C3%B3polis"
+  },
+  "google_maps_browser|scotiabank agora mall": {
+    "latitude": 18.4838716,
+    "longitude": -69.9399436,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Agencia+Agora+Mall/@18.4838716,-69.9399436,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf891728f2bc93:0xd5c6bc7c402a786!8m2!3d18.4838716!4d-69.9399436!16s%2Fg%2F11mxbtn35t?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+%C3%81gora+Mall"
+  },
+  "google_maps_browser|scotiabank bella vista mall": {
+    "latitude": 18.4539444,
+    "longitude": -69.9416944,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Bella+Vista/@18.4539444,-69.9416944,17z/data=!3m1!4b1!4m6!3m5!1s0x8ea563fffe561155:0x1b02bbd8780892a9!8m2!3d18.4539444!4d-69.9416944!16s%2Fg%2F11pbg9cxsh?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Bella+Vista+Mall"
+  },
+  "google_maps_browser|scotiabank bravo san isidro": {
+    "latitude": 18.4846667,
+    "longitude": -69.842,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Bravo+-+San+Isidro/@18.4846667,-69.842,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf8766676e846b:0x42e7813fbf4511e8!8m2!3d18.4846667!4d-69.842!16s%2Fg%2F11r3_hp1mm?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Bravo+-+San+Isidro"
+  },
+  "google_maps_browser|scotiabank downtown center": {
+    "latitude": 18.4511829,
+    "longitude": -69.9527119,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Downtown+Center/@18.4511829,-69.9527119,17z/data=!3m1!4b1!4m6!3m5!1s0x8ea563bc618afeeb:0x1a502fcf31a13258!8m2!3d18.4511829!4d-69.9527119!16s%2Fg%2F11ptpp9b6b?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Downtown+Center"
+  },
+  "google_maps_browser|scotiabank duarte sur": {
+    "latitude": 18.4778056,
+    "longitude": -69.8874722,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Duarte+Sur/@18.4778056,-69.8874722,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf899ededcce8f:0xcb63388072731418!8m2!3d18.4778056!4d-69.8874722!16s%2Fg%2F11mxbvq70n?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Duarte+Sur"
+  },
+  "google_maps_browser|scotiabank galeria 360": {
+    "latitude": 18.4847457,
+    "longitude": -69.937091,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+%E2%80%A2+Galer%C3%ADa+360/@18.4847457,-69.937091,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf89a46beb9ea1:0x4ea7eab3199717c!8m2!3d18.4847457!4d-69.937091!16s%2Fg%2F11rmrdn8vg?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Galer%C3%ADa+360"
+  },
+  "google_maps_browser|scotiabank kennedy esq lope de vega jfk": {
+    "latitude": 18.4833056,
+    "longitude": -69.9313889,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Kennedy+esq.+Lope+de+Vega/@18.4833056,-69.9313889,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf89f43f288259:0xa19315084bbd9d12!8m2!3d18.4833056!4d-69.9313889!16s%2Fg%2F11mxbvzrcd?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Kennedy+esq.+Lope+de+Vega+%28JFK%29"
+  },
+  "google_maps_browser|scotiabank luperon": {
+    "latitude": 18.4626667,
+    "longitude": -69.96925,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Luper%C3%B3n/@18.4626667,-69.96925,17z/data=!3m1!4b1!4m6!3m5!1s0x8ea5619eebd49931:0xfb33744fcdb4e13e!8m2!3d18.4626667!4d-69.96925!16s%2Fg%2F11pbgb30zp?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Luper%C3%B3n"
+  },
+  "google_maps_browser|scotiabank maximo gomez": {
+    "latitude": 18.4636111,
+    "longitude": -69.90975,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+M%C3%A1ximo+G%C3%B3mez/@18.4636111,-69.90975,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf89819ad751ff:0x453b89727f54bfcb!8m2!3d18.4636111!4d-69.90975!16s%2Fg%2F11mxbxv7xn?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+M%C3%A1ximo+G%C3%B3mez"
+  },
+  "google_maps_browser|scotiabank megacentro": {
+    "latitude": 18.5064973,
+    "longitude": -69.8558569,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Megacentro/@18.5064973,-69.8558569,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf87f81b4557f1:0xc90a1d337f479894!8m2!3d18.5064973!4d-69.8558569!16s%2Fg%2F11mxbxc1tn?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Megacentro"
+  },
+  "google_maps_browser|scotiabank naco": {
+    "latitude": 18.4768333,
+    "longitude": -69.9268333,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Naco/@18.4768333,-69.9268333,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf89c65b97bf27:0xc5f462f2beae5bd3!8m2!3d18.4768333!4d-69.9268333!16s%2Fg%2F11r3_jkqwg?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Naco"
+  },
+  "google_maps_browser|scotiabank nunez de caceres": {
+    "latitude": 18.45975,
+    "longitude": -69.9566111,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+N%C3%BA%C3%B1ez+de+C%C3%A1ceres/@18.45975,-69.9566111,17z/data=!3m1!4b1!4m6!3m5!1s0x8ea56194a3e8cf2f:0xb4f617d4cf265850!8m2!3d18.45975!4d-69.9566111!16s%2Fg%2F11r3_k98jb?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+N%C3%BA%C3%B1ez+de+C%C3%A1ceres"
+  },
+  "google_maps_browser|scotiabank piantini": {
+    "latitude": 18.4741102,
+    "longitude": -69.9354315,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Piantini/@18.4741102,-69.9354315,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf89ac7a0ca0a3:0x4d13dfe49662427c!8m2!3d18.4741102!4d-69.9354315!16s%2Fg%2F11mxbxkb3m?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Piantini"
+  },
+  "google_maps_browser|scotiabank plaza duarte": {
+    "latitude": 18.48875,
+    "longitude": -69.9778333,
+    "final_url": "https://www.google.com/maps/place/Scotiabank/@18.48875,-69.9778333,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf8bf3f54ee51b:0x2bc276e7278e18de!8m2!3d18.48875!4d-69.9778333!16s%2Fg%2F11mxbwxjpz?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Plaza+Duarte"
+  },
+  "google_maps_browser|scotiabank romulo betancourt": {
+    "latitude": 18.448283,
+    "longitude": -69.9608496,
+    "final_url": "https://www.google.com/maps/place/Scotiabank/data=!4m7!3m6!1s0x8ea561f47549e3bd:0xc2b0bf173f87d826!8m2!3d18.448283!4d-69.9608496!16s%2Fg%2F1tn028nv!19sChIJveNJdfRhpY4RJtiHPxe_sMI?authuser=0&hl=es-419&g_ep=EgoyMDI2MDkyMC4wIJJjKgBIAVAD&rclk=1",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+R%C3%B3mulo+Betancourt"
+  },
+  "google_maps_browser|scotiabank sambil": {
+    "latitude": 18.4827295,
+    "longitude": -69.9117929,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+%E2%80%A2+Sambil/@18.4827295,-69.9117929,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf89ca404665cb:0x7ffd526ab9169a6d!8m2!3d18.4827295!4d-69.9117929!16s%2Fg%2F11dyxz5b31?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Sambil"
+  },
+  "google_maps_browser|scotiabank san vicente de paul": {
+    "latitude": 18.5049356,
+    "longitude": -69.8561539,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+San+Vicente+de+Paul/data=!4m7!3m6!1s0x8eaf87dd93b2ec43:0xdadbf9437e602cb3!8m2!3d18.5049356!4d-69.8561539!16s%2Fg%2F11mxbx7k4g!19sChIJQ-yyk92Hr44RsyxgfkP529o?authuser=0&hl=es-419&g_ep=EgoyMDI2MDkyMC4wIJJjKgBIAVAD&rclk=1",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+San+Vicente+de+Paul"
+  },
+  "google_maps_browser|scotiabank venezuela": {
+    "latitude": 18.48625,
+    "longitude": -69.8699722,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Venezuela/@18.48625,-69.8699722,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf897fb5cf7c6d:0xef713f7bd35a62d0!8m2!3d18.48625!4d-69.8699722!16s%2Fg%2F11r3_k4psb?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Venezuela"
+  },
+  "google_maps_browser|scotiabank w churchill casi esq kennedy torre": {
+    "latitude": 18.4796246,
+    "longitude": -69.9460085,
+    "final_url": "https://www.google.com/maps/place/Banco+Scotiabank/@18.4796246,-69.9460085,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf89f1a9f7d27f:0x4d7fe9533ef0edda!8m2!3d18.4796246!4d-69.9460085!16s%2Fg%2F1tsbn575?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+W.+Churchill+casi+esq.+Kennedy+%28Torre%29"
+  },
+  "google_maps_browser|scotiabank w churchill esq 27 de febrero principal": {
+    "latitude": 18.4635392,
+    "longitude": -69.9360431,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+W.+Churchill+esq.+27+de+Febrero/@18.4635392,-69.9360431,17z/data=!3m1!4b1!4m6!3m5!1s0x8ea563db7d546fef:0x22d48bf71938eac8!8m2!3d18.4635392!4d-69.9360431!16s%2Fg%2F11mxbvzr9g?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+W.+Churchill+esq.+27+de+Febrero+%28Principal%29"
+  },
+  "google_maps_browser|scotiabank bavaro": {
+    "latitude": 18.6370369,
+    "longitude": -68.3975912,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+B%C3%A1varo/@18.6370369,-68.3975912,17z/data=!3m1!4b1!4m6!3m5!1s0x8ea89347e5269663:0x6cd7eba45fdf9281!8m2!3d18.6370369!4d-68.3975912!16s%2Fg%2F11pbgb60z0?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+B%C3%A1varo"
+  },
+  "google_maps_browser|scotiabank higuey": {
+    "latitude": 18.6128333,
+    "longitude": -68.7113611,
+    "final_url": "https://www.google.com/maps/place/Scotiabank/@18.6128333,-68.7113611,17z/data=!3m1!4b1!4m6!3m5!1s0x8ea8b9e169332633:0x33bdb7e0e7510b00!8m2!3d18.6128333!4d-68.7113611!16s%2Fg%2F1q6jkbj8_?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Hig%C3%BCey"
+  },
+  "google_maps_browser|scotiabank la romana": {
+    "latitude": 18.4247222,
+    "longitude": -68.9638333,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+La+Romana/data=!4m7!3m6!1s0x8eaf5584ee3ee1a9:0x25c6b93e1498c678!8m2!3d18.4247222!4d-68.9638333!16s%2Fg%2F11mxbvz4yn!19sChIJqeE-7oRVr44ReMaYFD65xiU?authuser=0&hl=es-419&g_ep=EgoyMDI2MDkyMC4wIJJjKgBIAVAD&rclk=1",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+La+Romana"
+  },
+  "google_maps_browser|scotiabank la romana ccn jumbo": {
+    "latitude": 18.4184722,
+    "longitude": -68.9661667,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+La+Romana+CCN+Jumbo/@18.4184722,-68.9661667,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf55649054ff6f:0xebd545611e4d2474!8m2!3d18.4184722!4d-68.9661667!16s%2Fg%2F11mxbwsk8p?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+La+Romana+CCN+Jumbo"
+  },
+  "google_maps_browser|scotiabank marina chavon casa de campo": {
+    "latitude": 18.4006478,
+    "longitude": -68.89948,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Marina+Chav%C3%B3n/@18.4006478,-68.89948,17z/data=!3m1!4b1!4m6!3m5!1s0x8ea8ab4b896fcf95:0x712794cc2075ffaf!8m2!3d18.4006478!4d-68.89948!16s%2Fg%2F11r3_j1m93?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Marina+Chav%C3%B3n+%28Casa+de+Campo%29"
+  },
+  "google_maps_browser|scotiabank punta cana": {
+    "latitude": 18.5588098,
+    "longitude": -68.3721655,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Punta+Cana/data=!4m7!3m6!1s0x8ea89310beb2b741:0xd2c1b318a5bf0252!8m2!3d18.5588098!4d-68.3721655!16s%2Fg%2F11mxbxjdm1!19sChIJQbeyvhCTqI4RUgK_pRizwdI?authuser=0&hl=es-419&g_ep=EgoyMDI2MDkyMC4wIJJjKgBIAVAD&rclk=1",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Punta+Cana"
+  },
+  "google_maps_browser|scotiabank san pedro de macoris": {
+    "latitude": 18.4536944,
+    "longitude": -69.3077778,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+San+Pedro+de+Macor%C3%ADs/@18.4536944,-69.3077778,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf614c5d006231:0x9e0596cd3184b346!8m2!3d18.4536944!4d-69.3077778!16s%2Fg%2F11mxbxgyfr?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+San+Pedro+de+Macor%C3%ADs"
+  },
+  "google_maps_browser|scotiabank bonao": {
+    "latitude": 18.9408611,
+    "longitude": -70.4095556,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Bonao/@18.9408611,-70.4095556,17z/data=!3m1!4b1!4m6!3m5!1s0x8eafdf187c35864d:0x2a709d0ab308cd81!8m2!3d18.9408611!4d-70.4095556!16s%2Fg%2F11mxbvdvm0?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Bonao"
+  },
+  "google_maps_browser|scotiabank cabarete": {
+    "latitude": 19.7499722,
+    "longitude": -70.4061111,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Cabarete/@19.7499722,-70.4061111,17z/data=!3m1!4b1!4m6!3m5!1s0x8eae1dae5ad8d7c7:0x71529ecaf3254e9!8m2!3d19.7499722!4d-70.4061111!16s%2Fg%2F11r3_kh196?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Cabarete"
+  },
+  "google_maps_browser|scotiabank la vega": {
+    "latitude": 19.2238333,
+    "longitude": -70.5278056,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+La+Vega/@19.2238333,-70.5278056,17z/data=!3m1!4b1!4m6!3m5!1s0x8eb02de5de905a8f:0x2432f2ec4e34aa8f!8m2!3d19.2238333!4d-70.5278056!16s%2Fg%2F11mxbwl4p_?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+La+Vega"
+  },
+  "google_maps_browser|scotiabank las terrenas": {
+    "latitude": 19.3143611,
+    "longitude": -69.5424167,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Las+Terrenas/@19.3143611,-69.5424167,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaefb48dd334421:0xf26a7e5893a23cc1!8m2!3d19.3143611!4d-69.5424167!16s%2Fg%2F11pbg94z62?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Las+Terrenas"
+  },
+  "google_maps_browser|scotiabank mao": {
+    "latitude": 19.5544167,
+    "longitude": -71.0734444,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Mao/@19.5544167,-71.0734444,17z/data=!3m1!4b1!4m6!3m5!1s0x8eb1a572f4eaf277:0x8ef9e4bd35a689e4!8m2!3d19.5544167!4d-71.0734444!16s%2Fg%2F11r3_klsbg?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Mao"
+  },
+  "google_maps_browser|scotiabank moca": {
+    "latitude": 19.3925009,
+    "longitude": -70.5232569,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Moca/@19.3925009,-70.5232569,17z/data=!3m1!4b1!4m6!3m5!1s0x8eb1d74fb4edfd5f:0xc9ff37978e874b69!8m2!3d19.3925009!4d-70.5232569!16s%2Fg%2F11r3_k71v6?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Moca"
+  },
+  "google_maps_browser|scotiabank nagua": {
+    "latitude": 19.3757104,
+    "longitude": -69.8548065,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Nagua/@19.3757104,-69.8548065,17z/data=!3m1!4b1!4m6!3m5!1s0x8eae5b260e006c1b:0xf7039a58921aa47d!8m2!3d19.3757104!4d-69.8548065!16s%2Fg%2F11r3_hp1mz?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Nagua"
+  },
+  "google_maps_browser|scotiabank puerto plata": {
+    "latitude": 19.7934167,
+    "longitude": -70.6854722,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Puerto+Plata/@19.7934167,-70.6854722,17z/data=!3m1!4b1!4m6!3m5!1s0x8eb1efe8d5b78f69:0x2e028f70026d99a9!8m2!3d19.7934167!4d-70.6854722!16s%2Fg%2F11pbgbq4nr?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Puerto+Plata"
+  },
+  "google_maps_browser|scotiabank santiago gurabo": {
+    "latitude": 19.4691389,
+    "longitude": -70.687,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Gurabo/@19.4691389,-70.687,17z/data=!3m1!4b1!4m6!3m5!1s0x8eb1c5f49b63ab15:0xedcde7e99f03b56!8m2!3d19.4691389!4d-70.687!16s%2Fg%2F11pbg9l_th?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Santiago+Gurabo"
+  },
+  "google_maps_browser|scotiabank santiago center": {
+    "latitude": 19.4581125,
+    "longitude": -70.6861787,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Santiago+Center/data=!4m7!3m6!1s0x8eb1c5c1ebf23e49:0x31c4e5fc77d9ce18!8m2!3d19.4581125!4d-70.6861787!16s%2Fg%2F11mlygwj2q!19sChIJST7y68HFsY4RGM7Zd_zlxDE?authuser=0&hl=es-419&g_ep=EgoyMDI2MDkyMC4wIJJjKgBIAVAD&rclk=1",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Santiago+Center"
+  },
+  "google_maps_browser|scotiabank santiago juan pablo duarte": {
+    "latitude": 19.4591484,
+    "longitude": -70.6783752,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Juan+Pablo+Duarte/@19.4591484,-70.6783752,17z/data=!3m1!4b1!4m6!3m5!1s0x8eb1c5fbf3ee794b:0xffb0d24b69b626b!8m2!3d19.4591484!4d-70.6783752!16s%2Fg%2F11mxbw9tyb?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Santiago+Juan+Pablo+Duarte"
+  },
+  "google_maps_browser|scotiabank san francisco de macoris": {
+    "latitude": 19.296,
+    "longitude": -70.2578333,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+San+Francisco+de+Macor%C3%ADs/@19.296,-70.2578333,17z/data=!3m1!4b1!4m6!3m5!1s0x8eae2dc9479015ed:0x67dfa5b33e6d2cd9!8m2!3d19.296!4d-70.2578333!16s%2Fg%2F11mxbvgs1w?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+San+Francisco+de+Macor%C3%ADs"
+  },
+  "google_maps_browser|scotiabank santiago 27 de febrero": {
+    "latitude": 19.4602017,
+    "longitude": -70.690185,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Santiago+27+de+Febrero/@19.4602017,-70.690185,17z/data=!3m1!4b1!4m6!3m5!1s0x8eb1c51ef9a0a531:0x34da718703429062!8m2!3d19.4602017!4d-70.690185!16s%2Fg%2F11pbg9y22f?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Santiago+27+de+Febrero"
+  },
+  "google_maps_browser|scotiabank santiago el sol": {
+    "latitude": 19.4506111,
+    "longitude": -70.7004167,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Santiago+El+Sol/@19.4506111,-70.7004167,17z/data=!3m1!4b1!4m6!3m5!1s0x8eb1cf9f27c3203b:0xd5c0c7193e168c58!8m2!3d19.4506111!4d-70.7004167!16s%2Fg%2F11pbgc0j4d?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Santiago+El+Sol"
+  },
+  "google_maps_browser|scotiabank santiago las colinas": {
+    "latitude": 19.4828889,
+    "longitude": -70.7192222,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Las+Colinas/@19.4828889,-70.7192222,17z/data=!3m1!4b1!4m6!3m5!1s0x8eb1c70be887abd1:0x230d422f6355f2c5!8m2!3d19.4828889!4d-70.7192222!16s%2Fg%2F11r3_j1mtp?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Santiago+Las+Colinas"
+  },
+  "google_maps_browser|scotiabank azua": {
+    "latitude": 18.4531117,
+    "longitude": -70.7360628,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Azua/@18.4531117,-70.7360628,17z/data=!3m1!4b1!4m6!3m5!1s0x8ebaa3e3e9bf7305:0xa85a0fc486be4247!8m2!3d18.4531117!4d-70.7360628!16s%2Fg%2F11c67v3jv1?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Azua"
+  },
+  "google_maps_browser|scotiabank bravo bani": {
+    "latitude": 18.2794734,
+    "longitude": -70.3245533,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+Bravo+-+Ban%C3%AD/@18.2794734,-70.3245533,17z/data=!3m1!4b1!4m6!3m5!1s0x8ea54ff31a430989:0xf5b1ab0ddc81b5d1!8m2!3d18.2794734!4d-70.3245533!16s%2Fg%2F11mxbx5t3n?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+Bravo+Ban%C3%AD"
+  },
+  "google_maps_browser|scotiabank san cristobal": {
+    "latitude": 18.4164167,
+    "longitude": -70.1110278,
+    "final_url": "https://www.google.com/maps/place/Scotiabank+San+Crist%C3%B3bal/@18.4164167,-70.1110278,17z/data=!3m1!4b1!4m6!3m5!1s0x8ea55f12e7e3791b:0xf13cd081ef9b3b33!8m2!3d18.4164167!4d-70.1110278!16s%2Fg%2F11mxbxk9lx?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+    "coordinate_pattern": "place_pin_3d4d",
+    "search_url": "https://www.google.com/maps/search/Scotiabank+San+Crist%C3%B3bal"
+  }
+}

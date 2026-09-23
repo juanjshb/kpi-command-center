@@ -8,9 +8,11 @@ from app.api.v1 import (
     competitors,
     geo,
     incidents,
+    jobs,
     logistics,
     metrics,
     planning,
+    subagents,
     users,
 )
 
@@ -21,6 +23,8 @@ for module in (
     catalogs,
     atms,
     branches,
+    subagents,
+    jobs,
     incidents,
     logistics,
     metrics,

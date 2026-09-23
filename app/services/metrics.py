@@ -10,12 +10,13 @@ from app.models import (
     ATMReading,
     BranchFinancial,
     BranchReading,
+    CompetitorLocation,
     Incidencia,
     Institution,
     MarketSnapshot,
     Sucursal,
 )
-from app.models.enums import ATMStatus, BranchStatus, IncidentStatus, Severity
+from app.models.enums import ATMStatus, BranchStatus, IncidentStatus, LocationType, Severity
 from app.schemas import ATMOut, BranchOut
 
 
@@ -31,6 +32,7 @@ def atm_totals(db, filters, tipo=None):
         ).all()
     )
     total = sum(status.values())
+    observed_total = total - status.get(ATMStatus.SIN_DATOS, 0)
     operating = status.get(ATMStatus.OPERATIVO, 0) + status.get(ATMStatus.BAJO_EFECTIVO, 0)
     row = db.execute(
         filters.period(
@@ -61,13 +63,18 @@ def atm_totals(db, filters, tipo=None):
     low = db.scalar(
         select(func.count())
         .select_from(ATM)
-        .where(ATM.id.in_(scoped), ATM.nivel_efectivo_pct <= get_settings().low_cash_threshold)
+        .where(
+            ATM.id.in_(scoped),
+            ATM.estado != ATMStatus.SIN_DATOS,
+            ATM.nivel_efectivo_pct <= get_settings().low_cash_threshold,
+        )
     )
     stale = db.scalar(
         select(func.count())
         .select_from(ATM)
         .where(
             ATM.id.in_(scoped),
+            ATM.estado != ATMStatus.SIN_DATOS,
             or_(
                 ATM.ultima_comunicacion.is_(None),
                 ATM.ultima_comunicacion
@@ -83,7 +90,7 @@ def atm_totals(db, filters, tipo=None):
         "atms_fuera_servicio": status.get(ATMStatus.FUERA_DE_SERVICIO, 0),
         "atms_mantenimiento": status.get(ATMStatus.MANTENIMIENTO, 0),
         "por_estado": {s.value: status.get(s, 0) for s in ATMStatus},
-        "disponibilidad_actual_pct": ratio(operating, total),
+        "disponibilidad_actual_pct": ratio(operating, observed_total),
         "uptime_pct": ratio(row.disponible, row.observados),
         "incidencias_criticas_abiertas": critical,
         "alertas_bajo_efectivo": low,
@@ -408,7 +415,25 @@ def comparison(db, filters):
         .group_by(Institution.id)
         .order_by(Institution.es_propia.desc(), Institution.nombre)
     ).all()
-    total_deposits = sum((r.depositos or Decimal(0) for r in rows), Decimal(0))
+
+    own_branch_count = (
+        db.scalar(
+            select(func.count()).select_from(Sucursal).where(Sucursal.id.in_(filters.branches()))
+        )
+        or 0
+    )
+    competitor_branch_stmt = filters.scope(
+        select(CompetitorLocation.institucion_id, func.count())
+        .where(CompetitorLocation.tipo == LocationType.SUCURSAL)
+        .group_by(CompetitorLocation.institucion_id),
+        CompetitorLocation,
+    )
+    competitor_branch_counts = dict(db.execute(competitor_branch_stmt).all())
+    branch_counts = {
+        row.id: own_branch_count if row.es_propia else competitor_branch_counts.get(row.id, 0)
+        for row in rows
+    }
+    total_observed_branches = sum(branch_counts.values())
     return [
         {
             "institucion_id": r.id,
@@ -417,14 +442,12 @@ def comparison(db, filters):
             "color": r.color,
             "fecha_corte": r.fecha,
             "total_atms": r.atms,
-            "total_sucursales": r.sucursales,
+            "total_sucursales": branch_counts[r.id],
             "depositos": r.depositos,
             "prestamos": r.prestamos,
             "transacciones": r.transacciones,
             "utilizacion_pct": ratio(r.weighted_util, r.weighted_count, 1),
-            "cuota_depositos_muestra_pct": ratio(r.depositos, total_deposits)
-            if r.depositos is not None
-            else None,
+            "cuota_sucursales_pct": ratio(branch_counts[r.id], total_observed_branches),
             "provincias_reportadas": r.provincias_reportadas,
             "fuentes": [x for x in r.fuentes if x],
         }
@@ -461,7 +484,18 @@ def planning_summary(db, filters):
             Sucursal.id.in_(filters.branches()), Sucursal.estado != BranchStatus.CERRADA
         )
     )
-    own = next((r for r in comparison(db, filters) if r["es_propia"]), None)
+    competitor_branch_count = (
+        db.scalar(
+            filters.scope(
+                select(func.count())
+                .select_from(CompetitorLocation)
+                .where(CompetitorLocation.tipo == LocationType.SUCURSAL),
+                CompetitorLocation,
+            )
+        )
+        or 0
+    )
+    total_market_branches = total + competitor_branch_count
     return {
         "total_sucursales": total,
         "cobertura_provincias_pct": ratio(covered, provinces),
@@ -472,5 +506,6 @@ def planning_summary(db, filters):
         "sucursales_con_saldos": balances[2],
         "fecha_saldo_min": balances[3],
         "fecha_saldo_max": balances[4],
-        "cuota_depositos_muestra_pct": own["cuota_depositos_muestra_pct"] if own else None,
+        "total_sucursales_mercado": total_market_branches,
+        "cuota_sucursales_pct": ratio(total, total_market_branches),
     }

@@ -2,12 +2,12 @@ import math
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query
-from sqlalchemy import String, cast, func, literal, select, union_all
+from sqlalchemy import String, case, cast, func, literal, select, union_all
 
 from app.api.deps import DB, CurrentUser, Paging
 from app.dashboard_schemas import FeatureCollection
-from app.models import ATM, CandidateLocation, CompetitorLocation, Sucursal
-from app.models.enums import ATMType, LocationType
+from app.models import ATM, CandidateLocation, CompetitorLocation, Subagente, Sucursal
+from app.models.enums import ATMStatus, ATMType, LocationType
 from app.services.filters import DashboardFilters
 from app.services.metrics import latest_branch_readings
 
@@ -20,7 +20,9 @@ def locations(
     user: CurrentUser,
     paging: Paging,
     filters: DashboardFilters,
-    capa: Literal["todas", "atms", "sucursales", "competencia", "candidatos"] = "todas",
+    capa: Literal[
+        "todas", "atms", "sucursales", "subagentes", "competencia", "candidatos"
+    ] = "todas",
     tipo: LocationType | None = None,
     tipo_atm: ATMType | None = None,
     bbox: str | None = Query(None, description="oeste,sur,este,norte (longitud,latitud)"),
@@ -36,10 +38,35 @@ def locations(
             ATM.latitud,
             ATM.longitud,
             cast(ATM.estado, String).label("estado"),
-            (100 - ATM.nivel_efectivo_pct).label("intensidad"),
+            case(
+                (ATM.estado == ATMStatus.SIN_DATOS, None),
+                else_=100 - ATM.nivel_efectivo_pct,
+            ).label("intensidad"),
             literal("ATM").label("tipo"),
         )
         statements.append(stmt.where(ATM.id.in_(filters.atms(tipo_atm))))
+    if capa == "subagentes" and tipo is None and tipo_atm is None:
+        statements.append(
+            filters.scope(
+                select(
+                    Subagente.id,
+                    literal("subagentes").label("capa"),
+                    Subagente.codigo_unico.label("codigo"),
+                    Subagente.nombre,
+                    Subagente.provincia,
+                    Subagente.latitud,
+                    Subagente.longitud,
+                    literal("ACTIVO").label("estado"),
+                    literal(1).label("intensidad"),
+                    literal("SUBAGENTE").label("tipo"),
+                ).where(
+                    Subagente.activo.is_(True),
+                    Subagente.latitud.is_not(None),
+                    Subagente.longitud.is_not(None),
+                ),
+                Subagente,
+            )
+        )
     if (
         capa in ("todas", "sucursales")
         and tipo in (None, LocationType.SUCURSAL)

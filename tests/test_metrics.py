@@ -12,7 +12,7 @@ from app.models import (
     Institution,
     MarketSnapshot,
 )
-from app.models.enums import LocationType
+from app.models.enums import ATMStatus, LocationType
 
 HOUR = datetime(2025, 1, 15, 13, tzinfo=UTC)  # 09:00 en Santo Domingo
 PERIOD = "desde=2025-01-15&hasta=2025-01-15"
@@ -68,6 +68,23 @@ def test_summary_distinguishes_live_and_historical(client, headers, data, db):
         "/api/v1/metrics/summary?" + PERIOD + "&provincia=La%20Altagracia", headers=headers["ADMIN"]
     )
     assert r.json()["total_atms"] == 1 and r.json()["total_transacciones"] == 0
+
+
+def test_source_inventory_without_telemetry_does_not_distort_operational_kpis(
+    client, headers, data, db
+):
+    atm = data["atms"][0]
+    atm.estado = ATMStatus.SIN_DATOS
+    atm.nivel_efectivo_pct = 0
+    atm.ultima_comunicacion = None
+    db.commit()
+
+    result = client.get("/api/v1/metrics/summary?" + PERIOD, headers=headers["ADMIN"]).json()
+    assert result["total_atms"] == 3
+    assert result["por_estado"]["SIN_DATOS"] == 1
+    assert result["disponibilidad_actual_pct"] == 50
+    assert result["alertas_bajo_efectivo"] == 0
+    assert result["atms_sin_comunicacion_reciente"] == 0
 
 
 def test_branch_weighted_metrics_and_local_hour(client, headers, data, db):
@@ -146,7 +163,7 @@ def test_latest_financial_balances_not_summed_over_days(client, headers, data, d
     assert Decimal(str(r.json()["total_depositos"])) == Decimal("1500")
 
 
-def test_market_comparison_common_cut(client, headers, data, db):
+def test_market_share_uses_current_branch_inventory(client, headers, data, db):
     banks = [
         Institution(nombre="Propia", es_propia=True),
         Institution(nombre="Otra", es_propia=False),
@@ -168,10 +185,33 @@ def test_market_comparison_common_cut(client, headers, data, db):
                 fuente="Prueba",
             )
         )
+    db.add(
+        CompetitorLocation(
+            institucion_id=banks[1].id,
+            codigo="OTHER-BR-1",
+            nombre="Sucursal competidora",
+            provincia="Santiago",
+            tipo=LocationType.SUCURSAL,
+            latitud=19.46,
+            longitud=-70.68,
+            fuente="Prueba",
+            fecha_verificacion=HOUR.date(),
+        )
+    )
     db.commit()
     r = client.get("/api/v1/competitors/comparison?" + PERIOD, headers=headers["ADMIN"])
     assert r.status_code == 200, r.text
-    assert r.json()["items"][0]["cuota_depositos_muestra_pct"] == 25
+    assert r.json()["meta"]["base_cuota"].startswith("sucursales propias")
+    assert r.json()["items"][0]["total_sucursales"] == 2
+    assert r.json()["items"][0]["cuota_sucursales_pct"] == 66.67
+    assert r.json()["items"][1]["total_sucursales"] == 1
+    assert r.json()["items"][1]["cuota_sucursales_pct"] == 33.33
+    assert "cuota_depositos_muestra_pct" not in r.json()["items"][0]
+
+    summary = client.get("/api/v1/metrics/planning/summary?" + PERIOD, headers=headers["ADMIN"])
+    assert summary.status_code == 200
+    assert summary.json()["total_sucursales_mercado"] == 3
+    assert summary.json()["cuota_sucursales_pct"] == 66.67
 
 
 def test_geojson_pagination_bbox_and_ranking(client, headers, data, db):

@@ -119,7 +119,8 @@ class PlanningSummary(WithMeta):
     sucursales_con_saldos: int
     fecha_saldo_min: date | None
     fecha_saldo_max: date | None
-    cuota_depositos_muestra_pct: float | None
+    total_sucursales_mercado: int
+    cuota_sucursales_pct: float | None
 
 
 class Comparison(Schema):
@@ -134,7 +135,7 @@ class Comparison(Schema):
     prestamos: Decimal | None
     transacciones: int | None
     utilizacion_pct: float | None
-    cuota_depositos_muestra_pct: float | None
+    cuota_sucursales_pct: float | None
     provincias_reportadas: int
     fuentes: list[str]
 

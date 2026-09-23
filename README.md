@@ -1,26 +1,122 @@
 # KPI Command Center
 
-API funcional y dashboard HTML/JS para las tres páginas de referencia en `images/`: operaciones ATM, sucursales y colas, y planificación geoespacial. Incluye **14 tablas PostgreSQL y 60 operaciones REST**, autenticación JWT, permisos por rol, migraciones y datos de demostración.
+Centro de control para visualizar y operar la red física bancaria en República Dominicana. Integra inventario de sucursales, cajeros automáticos y subagentes; telemetría operacional; logística de efectivo; planificación geoespacial; competencia y jobs de sincronización.
 
-El dashboard está en `dashboard/` y se sirve desde FastAPI en `/dashboard/`. Los contratos también están disponibles en OpenAPI y en [el mapa de integración](docs/dashboard-api.md).
+La solución incluye una API REST con FastAPI, un dashboard web servido por la misma aplicación y una base PostgreSQL con migraciones, auditoría y scripts SQL reproducibles.
 
-## Screenshots
-![Page 1](images/page1.jpg)
+La solucion conecta con fuentes oficiales de BHD y Scotiabank adeams de algunos web scrappers para mostrar las locaciones, pero datos como depositos y transacciones son datos de prueba. Todo funciona si alteras un valor en la DB ves los cambios cuando refresques.
 
-![Page 2](images/page2.jpg)
+![Dashboard de operaciones ATM](images/page4.png)
+![Dashboard de operaciones Sucursales](images/page3.png)
+![Dashboard de operaciones Subagentes](images/page2.png)
+![Dashboard de Analiticas](images/page1.png)
 
-![Page 3](images/page3.jpg)
+## Capacidades principales
 
+- Monitoreo de disponibilidad, utilización, transacciones y efectivo de ATM.
+- Alertas de bajo efectivo y detección de equipos sin comunicación reciente.
+- Seguimiento de colas, espera, SLA y capacidad de atención en sucursales.
+- Saldos diarios propios de depósitos y préstamos por sucursal.
+- Inventario y cobertura geográfica de subagentes bancarios.
+- Comparación territorial con sucursales de Scotiabank.
+- Evaluación de ubicaciones candidatas y competidores cercanos.
+- Sincronización idempotente del inventario público de BHD.
+- Historial y progreso de jobs ejecutados desde el dashboard.
+- Autenticación JWT, permisos por rol y auditoría de escrituras.
+
+## Casos de uso
+
+### 1. Monitorear la red de ATM
+
+Un equipo de operaciones puede identificar cuántos ATM están operativos, con bajo efectivo, en mantenimiento o fuera de servicio. El dashboard combina el estado actual del equipo con lecturas históricas para mostrar uptime, utilización, transacciones y monto retirado.
+
+Ejemplo de decisión: priorizar los ATM con efectivo menor o igual al umbral configurado y mayor volumen transaccional.
+
+### 2. Coordinar recargas de efectivo
+
+Cuando un ATM entra en `BAJO_EFECTIVO`, un operador puede registrar una orden CIT, asignar una transportadora y controlar su transición de `PROGRAMADA` a `EN_TRANSITO` y `COMPLETADA`. Al completar la orden se registra el monto entregado y el nivel de efectivo medido.
+
+Ejemplo de decisión: agrupar recargas urgentes por provincia y evitar una segunda ejecución de la misma orden.
+
+### 3. Mejorar atención y SLA en sucursales
+
+Los responsables de oficinas pueden comparar visitantes, clientes atendidos, espera promedio, cumplimiento de SLA, cola actual y utilización de cajeros humanos.
+
+Ejemplo de decisión: reforzar personal en las horas con mayor tráfico o en sucursales cuya espera ponderada supera el objetivo.
+
+### 4. Analizar cobertura de subagentes
+
+El módulo de subagentes permite buscar comercios aliados, filtrar por provincia o región, revisar horarios extendidos y distinguir registros con o sin coordenadas.
+
+Ejemplo de decisión: detectar provincias con baja cobertura y priorizar la incorporación o georreferenciación de nuevos aliados.
+
+### 5. Planificar expansión de la red
+
+Geospatial Analytics combina sucursales propias, competencia, densidad territorial y ubicaciones candidatas. La participación de mercado se calcula por cantidad de sucursales observadas, no por depósitos estimados de competidores.
+
+Ejemplo de decisión: evaluar una nueva sucursal según su potencial, la cobertura actual y los puntos competidores dentro de un radio configurable.
+
+### 6. Consultar depósitos propios por sucursal
+
+`Total Branch Deposits` suma el último saldo disponible de cada sucursal hasta la fecha seleccionada. No suma saldos de días diferentes ni intenta inferir depósitos de otras instituciones.
+
+Ejemplo de decisión: comparar la distribución de depósitos propios por provincia con la presencia física de la red.
+
+### 7. Actualizar el inventario BHD desde el dashboard
+
+Usuarios `ADMIN` y `OPERATOR` pueden iniciar el job de ubicaciones BHD, seguir su progreso y consultar el resultado persistente. La carga actualiza sucursales, ATM y subagentes por `fuente + fuente_id`, evitando duplicados.
+
+Ejemplo de decisión: ejecutar la sincronización después de una actualización pública del banco y revisar cuántos registros fueron insertados, actualizados u omitidos.
+
+### 8. Mantener una muestra competitiva verificable
+
+El sincronizador de competencia carga actualmente sucursales oficiales de Scotiabank. Los ATM y subagentes competidores permanecen fuera del alcance hasta disponer de una fuente confiable.
+
+Ejemplo de decisión: recalcular la cuota de sucursales después de actualizar la presencia física de Scotia.
+
+## Módulos del dashboard
+
+| Módulo | Ruta | Contenido |
+|---|---|---|
+| Operaciones ATM | `/dashboard/atm.html` | Estados, efectivo, uptime, transacciones, incidencias y CIT |
+| Sucursales | `/dashboard/branches.html` | Colas, SLA, tráfico, capacidad y estado de oficinas |
+| Subagentes | `/dashboard/subagents.html` | Inventario, cobertura, búsqueda y mapa |
+| Geospatial Analytics | `/dashboard/planning.html` | Cuota por sucursales, competencia y candidatos |
+| Jobs | `/dashboard/jobs.html` | Ejecución e historial de sincronizaciones BHD |
+
+![Dashboard de sucursales](images/page2.jpg)
+
+![Dashboard de planificación geoespacial](images/page3.jpg)
+
+## Cómo se conectan los componentes
+
+```mermaid
+flowchart LR
+    U[Usuarios] --> D[Dashboard HTML y JavaScript]
+    D --> A[FastAPI /api/v1]
+    A --> P[(PostgreSQL)]
+    A --> J[Jobs en segundo plano]
+    J --> B[BHD Locations API]
+    S[Scraper Scotiabank] --> A
+    T[Telemetría e integraciones] --> A
+```
 
 ## Stack
 
-Python 3.11+, FastAPI, Pydantic v2, SQLAlchemy 2 síncrono con `psycopg2-binary`, PostgreSQL, Alembic, PyJWT y Bcrypt. La configuración usa `pydantic-settings` y `python-dotenv`.
+- Python 3.11+
+- FastAPI y Uvicorn
+- SQLAlchemy 2 y Psycopg2
+- PostgreSQL 18
+- Alembic
+- Pydantic v2
+- JWT y Bcrypt
+- HTML, CSS y JavaScript sin framework de frontend
+- Google Maps JavaScript API opcional
+- Docker Compose y pgAdmin opcional
 
-Se conserva Bcrypt con coste 12 mediante `pwdlib[bcrypt]`, en lugar de Passlib, siguiendo la integración de librerías actuales descrita por [FastAPI](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/). Las contraseñas se validan contra su límite de 72 bytes UTF-8. Se probaron Python 3.13 y PostgreSQL 18.3; las versiones exactas están en `requirements.lock` y `requirements-dev.lock`.
+## Inicio rápido con Docker
 
-## Inicio con Docker
-
-Requiere Python para generar `.env` y Docker Compose con el motor encendido.
+Requisitos: Python, Docker y Docker Compose.
 
 ```powershell
 python scripts/init_env.py
@@ -28,34 +124,46 @@ docker compose up --build -d
 docker compose exec api python -m app.db.seed
 ```
 
-El primer comando conserva cualquier `.env` existente. En instalaciones nuevas genera secretos aleatorios. Si el puerto PostgreSQL ya está ocupado, cambia `POSTGRES_PORT` en `.env`. Dentro de los contenedores la conexión usa `db:5432`. Deja `DATABASE_URL` sin definir al usar Compose para que no reemplace esos parámetros.
+`scripts/init_env.py` crea `.env` con secretos aleatorios y conserva cualquier archivo existente. Compose espera a PostgreSQL, aplica las migraciones y luego inicia la API.
 
-- Swagger: http://localhost:8000/docs
-- Dashboard: http://localhost:8000/dashboard/
-- OpenAPI: http://localhost:8000/openapi.json
-- Estado: http://localhost:8000/health/ready
-- Demo: **admin@bank.com / admin123**. El seed está bloqueado con `APP_ENV=production`.
+Servicios disponibles:
 
-Compose espera a PostgreSQL, aplica la migración con un servicio separado y arranca la API sin insertar datos demo automáticamente.
+| Servicio | URL |
+|---|---|
+| Dashboard | http://localhost:8000/dashboard/ |
+| Swagger | http://localhost:8000/docs |
+| OpenAPI | http://localhost:8000/openapi.json |
+| Health check | http://localhost:8000/health/ready |
 
-### pgAdmin opcional
+Credenciales del seed de desarrollo:
+
+```text
+Usuario: admin@bank.com
+Clave:   admin123
+```
+
+El seed está bloqueado cuando `APP_ENV=production`.
+
+Para habilitar pgAdmin:
 
 ```powershell
 docker compose --profile tools up -d pgadmin
 ```
 
-Abre http://localhost:5050 con las credenciales `PGADMIN_*` de `.env`. Registra el servidor con host `db`, puerto `5432` y credenciales `POSTGRES_*`.
+Abre http://localhost:5050 y registra PostgreSQL usando `db` como host y `5432` como puerto interno.
 
-## Inicio con Python y PostgreSQL local
+## Instalación local
+
+Requiere Python 3.11 o posterior y una base PostgreSQL existente.
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.lock
 .\.venv\Scripts\python.exe -m pip install -e . --no-deps
-.\.venv\Scripts\python.exe scripts/init_env.py
+.\.venv\Scripts\python.exe scripts\init_env.py
 ```
 
-Configura `POSTGRES_*` en `.env` y crea previamente esa base en tu servidor PostgreSQL. Luego:
+Configura la conexión en `.env` y ejecuta:
 
 ```powershell
 .\.venv\Scripts\alembic.exe upgrade head
@@ -63,92 +171,205 @@ Configura `POSTGRES_*` en `.env` y crea previamente esa base en tu servidor Post
 .\.venv\Scripts\uvicorn.exe app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-En Linux/macOS usa `.venv/bin/` en lugar de `.venv\Scripts\`.
+En Linux y macOS sustituye `.venv\Scripts\` por `.venv/bin/`.
 
-Abre http://localhost:8000/dashboard/ para el login y las tres páginas del tablero.
-Configura `GOOGLE_MAPS_API_KEY` en `.env` para habilitar los mapas de Google Maps JS.
-Sin esa variable, las tarjetas, tablas y gráficos cargan igual, y el panel del mapa muestra un aviso.
+## Configuración
 
-### Instancia aislada preparada durante el desarrollo
+Las variables principales están documentadas en [.env.example](.env.example).
 
-En este workspace se creó `.local/pgdata`, con PostgreSQL en `127.0.0.1:55432`, sin modificar el servicio PostgreSQL preexistente. El `.env` local apunta a esa instancia. Es una instancia de desarrollo con autenticación local `trust` y escucha únicamente en loopback; los datos y `.env` están excluidos del repositorio. La configuración de Docker usa autenticación con contraseña.
+| Variable | Uso | Predeterminado |
+|---|---|---|
+| `APP_ENV` | `development`, `test` o `production` | `development` |
+| `DATABASE_URL` | Reemplaza los parámetros PostgreSQL individuales | Vacío |
+| `POSTGRES_*` | Usuario, clave, base, host y puerto | Configuración local |
+| `SECRET_KEY` | Firma de tokens JWT; mínimo 32 caracteres | Obligatoria |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Duración del token | `45` |
+| `LOW_CASH_THRESHOLD` | Umbral de alerta de efectivo | `20` |
+| `STALE_AFTER_MINUTES` | Tiempo para marcar un ATM sin comunicación | `15` |
+| `GOOGLE_MAPS_API_KEY` | Habilita mapas en el dashboard | Vacío |
+| `CORS_ORIGINS` | Orígenes permitidos por la API | Locales |
+| `TRUSTED_HOSTS` | Hosts HTTP aceptados | Locales |
 
-Para reiniciarla, desde la raíz del proyecto y con PostgreSQL 18 instalado:
-
-```powershell
-& 'C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe' -D .local/pgdata -l .local/postgres.log -o '-h 127.0.0.1 -p 55432' start
-```
-
-Para detener **solo esta instancia**:
-
-```powershell
-& 'C:\Program Files\PostgreSQL\18\bin\pg_ctl.exe' -D .local/pgdata -m fast stop
-```
+Sin `GOOGLE_MAPS_API_KEY`, las tarjetas, tablas y gráficos continúan funcionando; sólo el mapa muestra un aviso.
 
 ## Autenticación y roles
 
-`POST /api/v1/auth/login` recibe formulario OAuth2: `username` contiene el correo y `password` la contraseña. El resto de la API recibe `Authorization: Bearer <access_token>`.
+`POST /api/v1/auth/login` utiliza formulario OAuth2. El correo se envía en `username` y las demás rutas reciben `Authorization: Bearer <token>`.
 
 ```powershell
-$login = Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/v1/auth/login -Body @{username='admin@bank.com'; password='admin123'}
+$login = Invoke-RestMethod `
+  -Method Post `
+  -Uri http://localhost:8000/api/v1/auth/login `
+  -Body @{username='admin@bank.com'; password='admin123'}
+
 $headers = @{Authorization="Bearer $($login.access_token)"}
-Invoke-RestMethod -Uri http://localhost:8000/api/v1/metrics/summary -Headers $headers
+Invoke-RestMethod `
+  -Uri http://localhost:8000/api/v1/metrics/summary `
+  -Headers $headers
 ```
 
-| Función | ADMIN | OPERATOR | ANALYST |
-|---|---|---|---|
-| Consultar inventario, métricas, mapas y competencia | Sí | Sí | Sí |
-| Modificar red, incidencias, recargas y datos analíticos | Sí | Sí | No |
+| Capacidad | ADMIN | OPERATOR | ANALYST |
+|---|:---:|:---:|:---:|
+| Consultar dashboard, inventario y mapas | Sí | Sí | Sí |
+| Modificar operaciones, incidencias y recargas | Sí | Sí | No |
+| Ejecutar sincronización BHD | Sí | Sí | No |
 | Gestionar usuarios, provincias e instituciones | Sí | No | No |
 | Consultar auditoría | Sí | No | No |
-| Ver perfil, cambiar contraseña, cerrar sesiones propias | Sí | Sí | Sí |
 
-Los tokens expiran a los 45 minutos por defecto. Se comprueban firma, algoritmo, emisor, audiencia, fechas, tipo y versión de sesión. El rol y la activación se consultan en PostgreSQL en cada solicitud. Cambiar contraseña, desactivar o cambiar el rol invalida los tokens anteriores. `POST /auth/logout` cierra **todas las sesiones** del usuario.
-
-Tras 5 intentos fallidos, la cuenta se bloquea 15 minutos; el contador persiste en PostgreSQL. Las escrituras guardan auditoría en la misma transacción, sin contraseñas, hashes ni tokens. Los errores de validación tampoco devuelven esos valores.
-
-Para crear el primer administrador sin datos demo:
+Para crear el primer administrador sin cargar datos demo:
 
 ```powershell
-python -m app.db.create_admin --email admin@tu-banco.com --name 'Administrador'
+.\.venv\Scripts\python.exe -m app.db.create_admin `
+  --email admin@tu-banco.com `
+  --name "Administrador"
 ```
 
-Solicita la contraseña sin mostrarla. Las cuentas creadas por API y los cambios de contraseña requieren al menos 12 caracteres. En producción configura secretos, hosts y orígenes explícitos, usa HTTPS en el proxy de entrada y aplica límites de solicitudes en ese proxy. Swagger y OpenAPI públicos se deshabilitan con `APP_ENV=production`.
+## Semántica importante de los datos
 
-## Datos y API
+- `SIN_DATOS` significa que la ubicación existe en el inventario, pero todavía no tiene telemetría operacional.
+- `BAJO_EFECTIVO` usa `LOW_CASH_THRESHOLD`; por defecto se activa con un nivel menor o igual a 20%.
+- La disponibilidad actual excluye los ATM `SIN_DATOS` del denominador observado.
+- El uptime histórico se calcula con segundos disponibles sobre segundos observados.
+- La espera promedio de sucursales está ponderada por clientes atendidos.
+- Los depósitos y préstamos son saldos propios; se toma el último corte de cada sucursal.
+- La cuota geoespacial usa cantidad de sucursales propias y competidoras observadas.
+- Los periodos sin lecturas no se completan artificialmente con ceros.
+- Los importes monetarios se expresan en pesos dominicanos y se serializan sin pérdida de precisión.
 
-- [Modelo relacional y decisiones](docs/data-model.md)
-- [Widgets de las tres páginas → endpoints](docs/dashboard-api.md)
+## Sincronización de ubicaciones BHD
+
+### Desde el dashboard
+
+Abre `/dashboard/jobs.html` y ejecuta la actualización. Sólo puede existir un job BHD activo; el historial permanece en `job_runs`.
+
+Endpoints relacionados:
+
+```text
+POST /api/v1/jobs/bhd-locations
+GET  /api/v1/jobs
+GET  /api/v1/jobs/{id}
+```
+
+### Desde línea de comandos
+
+```powershell
+.\.venv\Scripts\python.exe scripts\scrapers\bhd_branches_scraper.py --load-db
+```
+
+Para validar la carga sin confirmar cambios:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\scrapers\bhd_branches_scraper.py --load-db --dry-run
+```
+
+También se puede reutilizar un CSV previamente generado:
+
+```powershell
+.\.venv\Scripts\python.exe -m app.db.import_bhd_locations `
+  --input data\bhd_locations_rd.csv `
+  --dry-run
+```
+
+## Sincronización de sucursales Scotiabank
+
+La integración competitiva sólo carga sucursales por ahora.
+
+```powershell
+.\.venv\Scripts\python.exe -m app.services.competitors_sync `
+  --checkpoint data\scotiabank_branches_rd.csv `
+  --browser msedge
+```
+
+Para cargar un archivo existente o validar con rollback:
+
+```powershell
+.\.venv\Scripts\python.exe -m app.services.competitors_sync `
+  --input data\scotiabank_branches_rd.csv
+
+.\.venv\Scripts\python.exe -m app.services.competitors_sync `
+  --input data\scotiabank_branches_rd.csv `
+  --dry-run
+```
+
+## Scripts SQL
+
+El directorio [`sql/`](sql/) contiene cinco scripts ordenados:
+
+```text
+00_database.sql
+01_schema.sql
+02_functions.sql
+03_sample_data.sql
+04_clear.sql
+```
+
+Instalación SQL completa:
+
+```powershell
+psql -U postgres -d postgres -f sql\00_database.sql
+psql -U kpi_user -d kpi_command_center -f sql\01_schema.sql
+psql -U kpi_user -d kpi_command_center -f sql\02_functions.sql
+psql -U kpi_user -d kpi_command_center -f sql\03_sample_data.sql
+```
+
+El sample SQL genera 150 lecturas de ATM, 150 lecturas de sucursal, 150 saldos diarios y 150 transacciones de subagentes. También crea estados para 25 ATM y cuatro alertas de bajo efectivo.
+
+Para eliminar únicamente la muestra:
+
+```powershell
+psql -U kpi_user -d kpi_command_center -f sql\04_clear.sql
+```
+
+La limpieza completa requiere confirmación explícita. Consulta [sql/README.md](sql/README.md) antes de ejecutarla.
+
+## API y documentación
+
+Todas las rutas funcionales usan el prefijo `/api/v1`.
+
+- [Mapa de endpoints por módulo](docs/dashboard-api.md)
+- [Modelo relacional y definición de indicadores](docs/data-model.md)
 - [Contrato OpenAPI exportado](docs/openapi.json)
+- Swagger en `/docs` durante desarrollo
 
-Las colecciones tienen `items`, `total`, `limit` (1–200) y `offset`. Las rutas están definidas sin barra final; FastAPI redirige la variante con barra. Los UUID inválidos y cuerpos incorrectos devuelven `422`; recursos ausentes, `404`; duplicados o transiciones incompatibles, `409`; token inválido, `401`; permisos insuficientes, `403`.
+Las colecciones usan el formato `items`, `total`, `limit` y `offset`. Los endpoints analíticos aceptan filtros por provincia, región y periodo. El rango predeterminado son los últimos 30 días en `America/Santo_Domingo`.
 
-El seed es idempotente para la misma fecha y configuración; no sobrescribe contraseñas ni datos existentes. Incluye 32 provincias, 6 sucursales ficticias, 18 ATMs, 3 incidencias activas, 2 recargas, 30 días de lecturas horarias, saldos, 4 instituciones demo, 12 ubicaciones competidoras y 6 candidatas. Las coordenadas sitúan ejemplos en zonas urbanas dominicanas; no identifican oficinas o cajeros reales. Las cifras operativas, financieras y de competencia son sintéticas.
+## Estructura del proyecto
 
-## Migraciones
-
-```powershell
-alembic upgrade head
-alembic check
-# Después de cambiar modelos:
-alembic revision --autogenerate -m 'descripcion del cambio'
+```text
+app/
+  api/v1/           Endpoints REST
+  core/             Configuración y seguridad
+  db/               Sesiones, seed e importadores
+  models/           Entidades SQLAlchemy y enums
+  services/         Métricas, filtros, jobs y sincronizadores
+dashboard/          Aplicación web estática
+scripts/scrapers/   Extracción BHD y Scotiabank
+alembic/            Migraciones de base de datos
+sql/                Instalación, funciones, sample y limpieza
+tests/              Pruebas de API, métricas, jobs e importación
+docs/               Contratos y documentación técnica
 ```
 
-La migración inicial es explícita y está versionada en `alembic/versions/`. Incluye UUID, enums nativos, claves foráneas, índices, unicidad y restricciones. No se usa `create_all()` al iniciar la API. Revisa cada migración autogenerada antes de aplicarla; referencia: [Alembic autogenerate](https://alembic.sqlalchemy.org/en/latest/autogenerate.html).
+## Pruebas y calidad
 
-## Pruebas
-
-Se ejecutan contra PostgreSQL real. Crea una base de pruebas independiente cuyo nombre termine en `_test`; `pytest` rechaza otro destino y nunca toma `.env` como destino implícito.
+Las pruebas requieren una base PostgreSQL separada cuyo nombre termine en `_test`.
 
 ```powershell
 $env:TEST_DATABASE_URL = 'postgresql+psycopg2://usuario:password@localhost:5432/kpi_command_center_test'
 .\.venv\Scripts\pytest.exe -q
 .\.venv\Scripts\ruff.exe check .
 .\.venv\Scripts\ruff.exe format --check .
+.\.venv\Scripts\alembic.exe check
 ```
 
-En la instancia aislada de este workspace se puede usar `postgresql+psycopg2://kpi_test@127.0.0.1:55432/kpi_command_center_test`. Cada prueba revierte sus cambios mediante una transacción exterior y savepoints.
+Cada prueba revierte sus cambios. El proyecto rechaza una URL de pruebas cuyo nombre de base no termine en `_test`.
 
-Validación realizada: **46 pruebas aprobadas**, migración de ida/vuelta y `alembic check`, análisis/formato Ruff, coherencia de dependencias y todos los GET de colecciones/métricas contra el seed. La configuración Compose fue validada; el motor Docker no estaba encendido, por lo que la ejecución se comprobó con PostgreSQL nativo. Hay dos avisos de deprecación de dependencias del cliente de pruebas, sin fallos.
+## Consideraciones de producción
 
-GitHub Actions repite pruebas y migraciones con PostgreSQL 18. Para actualizar los locks tras resolver nuevas versiones: `python scripts/lock_dependencies.py`.
+- Configura `APP_ENV=production`.
+- Usa secretos distintos para PostgreSQL, JWT y pgAdmin.
+- Define `CORS_ORIGINS` y `TRUSTED_HOSTS` explícitos.
+- Publica la API detrás de HTTPS y un proxy con límites de solicitudes.
+- No ejecutes seeds ni datos de muestra en producción.
+- Mantén las sincronizaciones externas bajo monitoreo y revisa sus fuentes.
+- Swagger y OpenAPI públicos se deshabilitan automáticamente en producción.

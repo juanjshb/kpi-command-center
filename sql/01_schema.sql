@@ -1,4 +1,4 @@
-﻿BEGIN;
+BEGIN;
 
 CREATE TABLE alembic_version (
     version_num VARCHAR(32) NOT NULL, 
@@ -52,6 +52,41 @@ CREATE TABLE users (
 );
 
 CREATE UNIQUE INDEX ix_users_email ON users (email);
+
+CREATE TYPE job_run_status AS ENUM ('PENDING', 'RUNNING', 'SUCCEEDED', 'FAILED');
+
+CREATE TABLE job_runs (
+    job_key VARCHAR(80) NOT NULL,
+    status job_run_status DEFAULT 'PENDING' NOT NULL,
+    requested_by_id UUID,
+    started_at TIMESTAMP WITH TIME ZONE,
+    finished_at TIMESTAMP WITH TIME ZONE,
+    progress_current INTEGER DEFAULT 0 NOT NULL,
+    progress_total INTEGER,
+    message VARCHAR(255),
+    result JSON,
+    error TEXT,
+    id UUID NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    CONSTRAINT pk_job_runs PRIMARY KEY (id),
+    CONSTRAINT ck_job_runs_progress CHECK (
+        progress_current >= 0
+        AND (progress_total IS NULL OR progress_total >= progress_current)
+    ),
+    CONSTRAINT ck_job_runs_lifecycle CHECK (
+        (status IN ('PENDING','RUNNING') AND finished_at IS NULL)
+        OR (status IN ('SUCCEEDED','FAILED') AND finished_at IS NOT NULL)
+    ),
+    CONSTRAINT fk_job_runs_requested_by_id_users
+        FOREIGN KEY(requested_by_id) REFERENCES users (id) ON DELETE SET NULL
+);
+
+CREATE INDEX ix_job_runs_job_key ON job_runs (job_key);
+CREATE INDEX ix_job_runs_status ON job_runs (status);
+CREATE INDEX ix_job_runs_requested_by_id ON job_runs (requested_by_id);
+CREATE UNIQUE INDEX uq_job_runs_active_key ON job_runs (job_key)
+WHERE status IN ('PENDING','RUNNING');
 
 CREATE TABLE audit_logs (
     actor_id UUID, 
@@ -152,7 +187,7 @@ CREATE INDEX ix_market_snapshots_institucion_id ON market_snapshots (institucion
 
 CREATE INDEX ix_market_snapshots_provincia ON market_snapshots (provincia);
 
-CREATE TYPE branch_status AS ENUM ('OPERATIVA', 'MANTENIMIENTO', 'CERRADA');
+CREATE TYPE branch_status AS ENUM ('OPERATIVA', 'MANTENIMIENTO', 'CERRADA', 'SIN_DATOS');
 
 CREATE TABLE sucursales (
     codigo VARCHAR(40) NOT NULL, 
@@ -165,6 +200,14 @@ CREATE TABLE sucursales (
     estado branch_status NOT NULL, 
     total_cajeros_humanos INTEGER NOT NULL, 
     sla_objetivo_segundos INTEGER NOT NULL, 
+    fuente VARCHAR(80),
+    fuente_id VARCHAR(80),
+    telefono VARCHAR(80),
+    zona VARCHAR(100),
+    horario_extendido BOOLEAN,
+    servicios TEXT,
+    horario JSON,
+    actualizado_fuente_en TIMESTAMP WITH TIME ZONE,
     id UUID NOT NULL, 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL, 
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL, 
@@ -172,14 +215,15 @@ CREATE TABLE sucursales (
     CONSTRAINT ck_sucursales_coordinates CHECK (latitud BETWEEN -90 AND 90 AND longitud BETWEEN -180 AND 180), 
     CONSTRAINT ck_sucursales_capacity_sla CHECK (total_cajeros_humanos >= 0 AND sla_objetivo_segundos > 0), 
     CONSTRAINT fk_sucursales_provincia_provincias FOREIGN KEY(provincia) REFERENCES provincias (nombre) ON DELETE RESTRICT, 
-    CONSTRAINT uq_sucursales_codigo UNIQUE (codigo)
+    CONSTRAINT uq_sucursales_codigo UNIQUE (codigo),
+    CONSTRAINT uq_sucursales_fuente UNIQUE (fuente, fuente_id)
 );
 
 CREATE INDEX ix_sucursales_provincia ON sucursales (provincia);
 
 CREATE TYPE atm_type AS ENUM ('DISPENSADOR', 'CDM_DEPOSITO');
 
-CREATE TYPE atm_status AS ENUM ('OPERATIVO', 'BAJO_EFECTIVO', 'FUERA_DE_SERVICIO', 'MANTENIMIENTO');
+CREATE TYPE atm_status AS ENUM ('OPERATIVO', 'BAJO_EFECTIVO', 'FUERA_DE_SERVICIO', 'MANTENIMIENTO', 'SIN_DATOS');
 
 CREATE TABLE atms (
     codigo_unico VARCHAR(40) NOT NULL, 
@@ -196,6 +240,14 @@ CREATE TABLE atms (
     longitud FLOAT NOT NULL, 
     ultima_comunicacion TIMESTAMP WITH TIME ZONE, 
     ultimo_mantenimiento TIMESTAMP WITH TIME ZONE, 
+    fuente VARCHAR(80),
+    fuente_id VARCHAR(80),
+    telefono VARCHAR(80),
+    zona VARCHAR(100),
+    horario_extendido BOOLEAN,
+    servicios TEXT,
+    horario JSON,
+    actualizado_fuente_en TIMESTAMP WITH TIME ZONE,
     id UUID NOT NULL, 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL, 
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL, 
@@ -204,7 +256,8 @@ CREATE TABLE atms (
     CONSTRAINT ck_atms_coordinates CHECK (latitud BETWEEN -90 AND 90 AND longitud BETWEEN -180 AND 180), 
     CONSTRAINT ck_atms_cash_percentage CHECK (nivel_efectivo_pct BETWEEN 0 AND 100), 
     CONSTRAINT fk_atms_provincia_provincias FOREIGN KEY(provincia) REFERENCES provincias (nombre) ON DELETE RESTRICT, 
-    CONSTRAINT fk_atms_sucursal_id_sucursales FOREIGN KEY(sucursal_id) REFERENCES sucursales (id) ON DELETE RESTRICT
+    CONSTRAINT fk_atms_sucursal_id_sucursales FOREIGN KEY(sucursal_id) REFERENCES sucursales (id) ON DELETE RESTRICT,
+    CONSTRAINT uq_atms_fuente UNIQUE (fuente, fuente_id)
 );
 
 CREATE UNIQUE INDEX ix_atms_codigo_unico ON atms (codigo_unico);
@@ -214,6 +267,39 @@ CREATE INDEX ix_atms_estado ON atms (estado);
 CREATE INDEX ix_atms_provincia ON atms (provincia);
 
 CREATE INDEX ix_atms_sucursal_id ON atms (sucursal_id);
+
+CREATE TABLE subagentes (
+    codigo_unico VARCHAR(40) NOT NULL,
+    nombre VARCHAR(150) NOT NULL,
+    provincia VARCHAR(100),
+    municipio VARCHAR(100),
+    direccion TEXT NOT NULL,
+    telefono VARCHAR(80),
+    zona VARCHAR(100),
+    latitud FLOAT,
+    longitud FLOAT,
+    horario_extendido BOOLEAN,
+    servicios TEXT,
+    horario JSON,
+    fuente VARCHAR(80) NOT NULL,
+    fuente_id VARCHAR(80) NOT NULL,
+    actualizado_fuente_en TIMESTAMP WITH TIME ZONE,
+    activo BOOLEAN DEFAULT true NOT NULL,
+    id UUID NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    CONSTRAINT pk_subagentes PRIMARY KEY (id),
+    CONSTRAINT ck_subagentes_coordinates CHECK (
+        (latitud IS NULL AND longitud IS NULL)
+        OR (latitud BETWEEN -90 AND 90 AND longitud BETWEEN -180 AND 180)
+    ),
+    CONSTRAINT fk_subagentes_provincia_provincias
+        FOREIGN KEY(provincia) REFERENCES provincias (nombre) ON DELETE RESTRICT,
+    CONSTRAINT uq_subagentes_fuente UNIQUE (fuente, fuente_id)
+);
+
+CREATE UNIQUE INDEX ix_subagentes_codigo_unico ON subagentes (codigo_unico);
+CREATE INDEX ix_subagentes_provincia ON subagentes (provincia);
 
 CREATE TABLE branch_financials (
     sucursal_id UUID NOT NULL, 
@@ -346,7 +432,9 @@ CREATE INDEX ix_logistica_recargas_estado ON logistica_recargas (estado);
 
 CREATE INDEX ix_logistica_recargas_fecha_programada ON logistica_recargas (fecha_programada);
 
-INSERT INTO alembic_version (version_num) VALUES ('0001_core') RETURNING alembic_version.version_num;
+INSERT INTO alembic_version (version_num)
+VALUES ('0004_job_runs')
+RETURNING alembic_version.version_num;
 
 COMMIT;
 

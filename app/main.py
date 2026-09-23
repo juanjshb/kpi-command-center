@@ -1,5 +1,5 @@
-import logging
 import json
+import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 from uuid import uuid4
@@ -97,7 +97,7 @@ def create_app() -> FastAPI:
     def ready(db: DB):
         db.execute(text("SELECT 1"))
         version = db.execute(text("SELECT version_num FROM alembic_version")).scalar_one_or_none()
-        if version != "0001_core":
+        if version != "0004_job_runs":
             return JSONResponse(status_code=503, content={"status": "migration_required"})
         return {"status": "ready", "migration": version}
 

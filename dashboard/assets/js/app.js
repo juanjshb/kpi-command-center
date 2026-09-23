@@ -12,6 +12,7 @@
     catalogs: null,
     charts: {},
     googlePromise: null,
+    jobPollTimer: null,
   };
 
   const pageMeta = {
@@ -39,24 +40,46 @@
       typeValues: "tipos_ubicacion",
       loader: loadPlanningPage,
     },
+    subagents: {
+      title: "Subagent Network & Partner Coverage:",
+      subtitle: "Dominican Republic",
+      active: "subagents",
+      typeLabel: "",
+      typeValues: null,
+      showDate: false,
+      loader: loadSubagentPage,
+    },
+    jobs: {
+      title: "Data Synchronization Jobs:",
+      subtitle: "Banco BHD",
+      active: "jobs",
+      typeLabel: "",
+      typeValues: null,
+      hideFilters: true,
+      loader: loadJobsPage,
+    },
   };
 
   const navItems = [
     ["atm", "/dashboard/atm.html", "bi-house-door", "ATM Operations"],
     ["branches", "/dashboard/branches.html", "bi-diagram-3", "Branch Operations"],
+    ["subagents", "/dashboard/subagents.html", "bi-shop", "Subagentes"],
     ["planning", "/dashboard/planning.html", "bi-globe-americas", "Geospatial Analytics"],
+    ["jobs", "/dashboard/jobs.html", "bi-arrow-repeat", "Jobs"],
     ["docs", "/docs", "bi-file-earmark-code", "API Docs"],
   ];
 
   const colors = {
-    red: "#e31837",
-    red2: "#ff4b5f",
-    green: "#63d084",
-    amber: "#f1a541",
-    gray: "#b9bdc7",
-    darkGrid: "rgba(255,255,255,0.12)",
-    text: "#f6f7fb",
-    muted: "#a7abb5",
+    primary: "#35C83E",
+    primaryHover: "#45D64E",
+    secondary: "#C6CEC6",
+    muted: "#929C92",
+    icon: "#65BD63",
+    iconBackground: "#293329",
+    danger: "#E06C75",
+    amber: "#D8B44C",
+    darkGrid: "rgba(198,206,198,0.12)",
+    text: "#F4F7F4",
   };
 
   $(function () {
@@ -176,7 +199,7 @@
       })
       .join("");
     $("#sidebar").html(`
-      <div class="brand"><span class="brand-mark">S</span><span>Scotiabank</span></div>
+      <div class="brand"><span class="brand-mark">BHD</span><span>BHD Leon</span></div>
       <nav class="nav-list">${links}</nav>
       <div class="sidebar-bottom">
         <a class="nav-link" href="/dashboard/atm.html"><i class="bi bi-gear"></i><span>Settings</span></a>
@@ -220,6 +243,12 @@
     if (!meta.typeValues) {
       $("#type-filter-group").hide();
     }
+    if (meta.showDate === false) {
+      $("#filter-period").closest(".filter-group").hide();
+    }
+    if (meta.hideFilters) {
+      $(".filter-group").hide();
+    }
   }
 
   function hydrateUser() {
@@ -258,6 +287,11 @@
     $(".refresh-button").on("click", function () {
       refreshPage();
     });
+    $("#subagent-search-form").on("submit", function (event) {
+      event.preventDefault();
+      refreshPage();
+    });
+    $("#run-bhd-job").on("click", startBhdJob);
     $("#logout-button").on("click", async function () {
       try {
         await api("/auth/logout", null, { method: "POST" });
@@ -336,9 +370,9 @@
     ]);
     renderMap("#network-map", geo.features, "atm");
     renderLegend("#atm-map-legend", [
-      ["Scotiabank ATMs", "#e31837"],
-      ["Competitor ATMs", "#8a8f98"],
-      ["Coverage Heatmap", "#ff8a1f", "background: radial-gradient(circle, #ffe16a 0%, #ff8a1f 55%, #ff5a1f 100%);"]
+      ["BHD Leon ATMs", colors.primary],
+      ["Competitor ATMs", colors.muted],
+      ["Coverage Heatmap", colors.icon, "background: radial-gradient(circle, #65BD63 0%, #35C83E 55%, #293329 100%);"]
     ]);
     renderCashChart(cash.items);
     renderDensityChart("#density-chart", density.items, "atms");
@@ -346,7 +380,7 @@
     renderAtmTable(status.items);
     renderComparison("#comparison-matrix", comparison.items, [
       ["ATMs", "total_atms"],
-      ["Coverage", "cuota_depositos_muestra_pct"],
+      ["Branch share", "cuota_sucursales_pct"],
       ["Trans. vol", "transacciones"],
       ["Deposits", "depositos"],
       ["Avg. util.", "utilizacion_pct"],
@@ -374,9 +408,9 @@
     ]);
     renderMap("#branch-map", geo.features, "branches");
     renderLegend("#branch-map-legend", [
-      ["Scotiabank Branches", "#e31837"],
-      ["Competitor Branches", "#8a8f98"],
-      ["Coverage Heatmap", "#ff8a1f", "background: radial-gradient(circle, #ffe16a 0%, #ff8a1f 55%, #ff5a1f 100%);"]
+      ["BHD Leon Branches", colors.primary],
+      ["Competitor Branches", colors.muted],
+      ["Coverage Heatmap", colors.icon, "background: radial-gradient(circle, #65BD63 0%, #35C83E 55%, #293329 100%);"]
     ]);
     renderHourlyChart(hourly.items);
     renderBranchTrendChart(trend.items);
@@ -399,26 +433,133 @@
     renderKpis([
       stat("Total branches", formatInt(summary.total_sucursales), `${summary.sucursales_con_saldos} with balances`, density.items, "sucursales"),
       stat("Network coverage", formatPct(summary.cobertura_provincias_pct), `${summary.provincias_cubiertas} provinces`, density.items, "sucursales"),
-      stat("Market share", formatPct(summary.cuota_depositos_muestra_pct), "deposit sample", comparison.items, "cuota_depositos_muestra_pct"),
+      stat("Market share", formatPct(summary.cuota_sucursales_pct), `${summary.total_sucursales} of ${summary.total_sucursales_mercado} observed branches`, comparison.items, "cuota_sucursales_pct"),
       stat("Total branch deposits", formatMoney(summary.total_depositos), "latest balance cut", comparison.items, "depositos"),
     ]);
     renderMap("#planning-map", geo.features, "planning");
     renderLegend("#planning-map-legend", [
-      ["Own Network", "#e31837"],
-      ["Competitor", "#8a8f98"],
-      ["Candidate", "#63d084"],
-      ["Coverage Heatmap", "#ff8a1f", "background: radial-gradient(circle, #ffe16a 0%, #ff8a1f 55%, #ff5a1f 100%);"]
+      ["BHD Leon Network", colors.primary],
+      ["Competitor", colors.muted],
+      ["Candidate", colors.icon],
+      ["Coverage Heatmap", colors.icon, "background: radial-gradient(circle, #65BD63 0%, #35C83E 55%, #293329 100%);"]
     ]);
     renderDensityChart("#planning-density-chart", density.items, "sucursales");
     renderCandidateTable(candidates.items);
     renderComparison("#planning-comparison-matrix", comparison.items, [
       ["Branches", "total_sucursales"],
-      ["Deposits", "depositos"],
-      ["Loans", "prestamos"],
-      ["Market share", "cuota_depositos_muestra_pct"],
+      ["Market share", "cuota_sucursales_pct"],
       ["Avg. util.", "utilizacion_pct"],
     ]);
     renderPlanningAlerts(summary, candidates.items);
+  }
+
+  function inventoryParams(extra) {
+    const params = Object.assign({}, extra || {});
+    const region = $("#filter-region").val();
+    const provincia = $("#filter-province").val();
+    if (region) params.region = region;
+    if (provincia) params.provincia = provincia;
+    return params;
+  }
+
+  async function loadAllGeoFeatures(params) {
+    let offset = 0;
+    let total = 0;
+    const features = [];
+    do {
+      const page = await api("/geo/locations", Object.assign({}, params, { limit: 200, offset }));
+      total = page.total || 0;
+      features.push.apply(features, page.features || []);
+      offset += page.features ? page.features.length : 0;
+    } while (offset < total && offset > 0);
+    return { total, features };
+  }
+
+  async function loadSubagentPage() {
+    const params = inventoryParams();
+    const search = String($("#subagent-search").val() || "").trim();
+    const listParams = Object.assign({}, params, { limit: 50 });
+    if (search) listParams.search = search;
+    const [summary, listing, geo] = await Promise.all([
+      api("/subagents/summary", params),
+      api("/subagents", listParams),
+      loadAllGeoFeatures(Object.assign({}, params, { capa: "subagentes" })),
+    ]);
+
+    $("#period-label").text("Inventario oficial BHD · actualización bajo demanda");
+    renderKpis([
+      stat("Total subagentes", formatInt(summary.total), `${summary.activos} activos`),
+      stat("Cobertura geográfica", formatInt(summary.provincias), "provincias representadas"),
+      stat("Con coordenadas", formatInt(summary.con_coordenadas), `${summary.sin_coordenadas} sin punto geográfico`),
+      stat("Horario extendido", formatInt(summary.horario_extendido), "según la fuente BHD"),
+    ]);
+    renderMap("#subagent-map", geo.features, "subagents");
+    renderLegend("#subagent-map-legend", [["Subagentes BHD", colors.primary]]);
+    $("#subagent-quality").html(`
+      ${mini("Con coordenadas", summary.con_coordenadas, percentage(summary.con_coordenadas, summary.total), "ok")}
+      ${mini("Sin coordenadas", summary.sin_coordenadas, percentage(summary.sin_coordenadas, summary.total), "warn")}
+      ${mini("Horario extendido", summary.horario_extendido, percentage(summary.horario_extendido, summary.total), "ok")}
+      <article class="mini-card"><span>Última actualización de fuente</span><strong class="mini-date">${escapeHtml(formatDateTime(summary.ultima_actualizacion_fuente))}</strong></article>
+    `);
+    $("#subagent-table-note").text(`${formatInt(listing.total)} resultados · mostrando hasta 50`);
+    renderSubagentTable(listing.items || []);
+  }
+
+  async function startBhdJob() {
+    const $button = $("#run-bhd-job");
+    if ($button.prop("disabled")) return;
+    $button.prop("disabled", true).html('<i class="bi bi-hourglass-split"></i> Iniciando...');
+    try {
+      await api("/jobs/bhd-locations", null, { method: "POST" });
+      await loadJobsPage();
+    } catch (error) {
+      showNotice(readError(error));
+      await loadJobsPage();
+    }
+  }
+
+  async function loadJobsPage() {
+    if (state.jobPollTimer) {
+      window.clearTimeout(state.jobPollTimer);
+      state.jobPollTimer = null;
+    }
+    const response = await api("/jobs", { limit: 30, job_key: "bhd_locations_sync" });
+    const jobs = response.items || [];
+    const active = jobs.find(function (job) {
+      return job.status === "PENDING" || job.status === "RUNNING";
+    });
+    const latest = jobs[0] || null;
+    const successes = jobs.filter(function (job) { return job.status === "SUCCEEDED"; }).length;
+    const failures = jobs.filter(function (job) { return job.status === "FAILED"; }).length;
+    const latestRows = latest && latest.result && latest.result.extraction
+      ? latest.result.extraction.rows
+      : 0;
+
+    $("#period-label").text("Historial persistente de sincronizaciones");
+    renderKpis([
+      stat("Ejecuciones", formatInt(response.total), "sincronizaciones registradas"),
+      stat("Completadas", formatInt(successes), "en las últimas 30 ejecuciones"),
+      stat("Fallidas", formatInt(failures), failures ? "requieren revisión" : "sin errores recientes"),
+      stat("Última extracción", formatInt(latestRows), "registros recibidos de BHD"),
+    ]);
+    renderCurrentJob(active || latest);
+    renderJobsTable(jobs);
+
+    const canRun = state.user && ["ADMIN", "OPERATOR"].includes(state.user.role);
+    const $button = $("#run-bhd-job");
+    $button
+      .prop("disabled", !canRun || Boolean(active))
+      .html(active
+        ? '<i class="bi bi-arrow-repeat spin"></i> Actualización en curso'
+        : '<i class="bi bi-play-fill"></i> Ejecutar actualización');
+    $("#job-permission-note").text(
+      canRun ? "Solo puede existir una sincronización activa." : "Tu rol permite consultar, pero no ejecutar jobs."
+    );
+    if (active) {
+      state.jobPollTimer = window.setTimeout(function () {
+        loadJobsPage().catch(function (error) { showNotice(readError(error)); });
+      }, 2500);
+    }
   }
 
   function setLoading() {
@@ -426,6 +567,7 @@
     $(".data-table").html("");
     $(".matrix").html('<div class="skeleton"></div>');
     $(".mini-stack").html('<div class="skeleton"></div>');
+    $("#current-job").html('<div class="skeleton"></div>');
   }
 
   function showNotice(message) {
@@ -467,8 +609,8 @@
         labels: values.map(function (_, i) { return i + 1; }),
         datasets: [{
           data: values,
-          borderColor: colors.red2,
-          backgroundColor: "rgba(227, 24, 55, 0.25)",
+          borderColor: colors.primaryHover,
+          backgroundColor: "rgba(53, 200, 62, 0.25)",
           borderWidth: 2,
           pointRadius: 0,
           fill: true,
@@ -483,7 +625,7 @@
     const grouped = groupBy(items, "provincia");
     const provinces = Object.keys(grouped).slice(0, 5);
     const labels = unique(items.map(function (item) { return item.periodo; }));
-    const palette = [colors.red, colors.green, colors.amber, "#8ad5ff", colors.gray];
+    const palette = [colors.primary, colors.icon, colors.primaryHover, colors.secondary, colors.muted];
     const datasets = provinces.map(function (province, index) {
       const byPeriod = indexBy(grouped[province], "periodo");
       return {
@@ -507,8 +649,8 @@
       [{
         label: "Transactions",
         data: items.map(function (item) { return item.transacciones; }),
-        borderColor: colors.red2,
-        backgroundColor: "rgba(227,24,55,0.28)",
+        borderColor: colors.primaryHover,
+        backgroundColor: "rgba(53,200,62,0.28)",
         fill: true,
         pointRadius: 0,
         tension: 0.3,
@@ -524,8 +666,8 @@
         {
           label: "SLA %",
           data: items.map(function (item) { return item.cumplimiento_sla_pct; }),
-          borderColor: colors.green,
-          backgroundColor: "rgba(99,208,132,0.18)",
+          borderColor: colors.icon,
+          backgroundColor: "rgba(101,189,99,0.18)",
           pointRadius: 0,
           tension: 0.3,
           yAxisID: "y",
@@ -533,8 +675,8 @@
         {
           label: "Wait min",
           data: items.map(function (item) { return item.espera_promedio_minutos; }),
-          borderColor: colors.red2,
-          backgroundColor: "rgba(227,24,55,0.2)",
+          borderColor: colors.primaryHover,
+          backgroundColor: "rgba(53,200,62,0.2)",
           pointRadius: 0,
           tension: 0.3,
           yAxisID: "y1",
@@ -552,8 +694,8 @@
         datasets: [{
           label: "Visitors",
           data: items.map(function (item) { return item.visitantes; }),
-          backgroundColor: "rgba(227,24,55,0.88)",
-          borderColor: colors.red2,
+          backgroundColor: "rgba(53,200,62,0.88)",
+          borderColor: colors.primaryHover,
           borderWidth: 1,
         }],
       },
@@ -573,8 +715,8 @@
         datasets: [{
           label: key === "atms" ? "ATMs" : "Branches",
           data: sorted.map(function (item) { return item[key]; }),
-          backgroundColor: "rgba(227,24,55,0.9)",
-          borderColor: colors.red2,
+          backgroundColor: "rgba(53,200,62,0.9)",
+          borderColor: colors.primaryHover,
           borderWidth: 1,
         }],
       },
@@ -638,6 +780,83 @@
     `);
   }
 
+  function renderSubagentTable(items) {
+    const rows = items.map(function (item) {
+      return `
+        <tr>
+          <td>${escapeHtml(item.codigo_unico)}</td>
+          <td><strong>${escapeHtml(item.nombre)}</strong><br><span class="cell-muted">${escapeHtml(item.direccion)}</span></td>
+          <td>${escapeHtml(item.provincia || "Sin asignar")}</td>
+          <td>${escapeHtml(item.zona || "—")}</td>
+          <td>${escapeHtml(item.telefono || "—")}</td>
+          <td>${item.latitud === null ? statusPill("SIN_COORDENADAS") : statusPill("GEOLOCALIZADO")}</td>
+          <td>${statusPill(item.activo ? "ACTIVO" : "INACTIVO")}</td>
+        </tr>
+      `;
+    }).join("");
+    $("#subagent-table").html(`
+      <thead><tr><th>Código</th><th>Subagente</th><th>Provincia</th><th>Zona BHD</th><th>Teléfono</th><th>Ubicación</th><th>Estado</th></tr></thead>
+      <tbody>${rows || emptyRow(7)}</tbody>
+    `);
+  }
+
+  function renderCurrentJob(job) {
+    if (!job) {
+      $("#current-job").html(`
+        <div class="empty-state"><i class="bi bi-clock-history"></i><strong>Sin ejecuciones</strong><span>Ejecuta la primera actualización BHD.</span></div>
+      `);
+      return;
+    }
+    const total = number(job.progress_total);
+    const progress = total ? Math.min(100, number(job.progress_current) / total * 100) : 0;
+    const load = job.result && job.result.load ? job.result.load : {};
+    const inserted = sumValues(load.inserted);
+    const updated = sumValues(load.updated);
+    const skipped = sumValues(load.skipped);
+    $("#current-job").html(`
+      <div class="job-status-row">
+        <div>
+          <span class="job-id">${escapeHtml(job.job_key)}</span>
+          <h3>${escapeHtml(job.message || labelize(job.status))}</h3>
+        </div>
+        ${statusPill(job.status)}
+      </div>
+      <div class="job-progress-track"><div class="job-progress-fill" style="width:${progress}%"></div></div>
+      <div class="job-progress-meta">
+        <span>${job.progress_total ? `${job.progress_current} / ${job.progress_total} pasos` : "Preparando ejecución"}</span>
+        <span>${formatPct(progress)}</span>
+      </div>
+      <div class="job-result-grid">
+        <div><span>Insertados</span><strong>${formatInt(inserted)}</strong></div>
+        <div><span>Actualizados</span><strong>${formatInt(updated)}</strong></div>
+        <div><span>Omitidos</span><strong>${formatInt(skipped)}</strong></div>
+        <div><span>Duración</span><strong>${escapeHtml(jobDuration(job))}</strong></div>
+      </div>
+      ${job.error ? `<p class="job-error"><i class="bi bi-exclamation-triangle"></i>${escapeHtml(job.error)}</p>` : ""}
+    `);
+  }
+
+  function renderJobsTable(items) {
+    const rows = items.map(function (job) {
+      const load = job.result && job.result.load ? job.result.load : {};
+      return `
+        <tr>
+          <td>${escapeHtml(formatDateTime(job.created_at))}</td>
+          <td>${statusPill(job.status)}</td>
+          <td>${formatInt(sumValues(load.inserted))}</td>
+          <td>${formatInt(sumValues(load.updated))}</td>
+          <td>${formatInt(sumValues(load.skipped))}</td>
+          <td>${escapeHtml(jobDuration(job))}</td>
+          <td class="job-message-cell">${escapeHtml(job.error || job.message || "—")}</td>
+        </tr>
+      `;
+    }).join("");
+    $("#jobs-table").html(`
+      <thead><tr><th>Inicio</th><th>Estado</th><th>Insertados</th><th>Actualizados</th><th>Omitidos</th><th>Duración</th><th>Resultado</th></tr></thead>
+      <tbody>${rows || emptyRow(7)}</tbody>
+    `);
+  }
+
   function renderAtmAlerts(summary, incidents, refills) {
     $("#atm-alerts").html(`
       ${mini("Low cash alerts", summary.alertas_bajo_efectivo, percentage(summary.alertas_bajo_efectivo, summary.total_atms), "danger")}
@@ -662,13 +881,13 @@
     $("#planning-alerts").html(`
       ${mini("Top market potential", formatPct(top), number(top), "ok")}
       ${mini("Approved locations", approved, percentage(approved, candidates.length || 1), "ok")}
-      ${mini("Deposit sample share", formatPct(summary.cuota_depositos_muestra_pct), number(summary.cuota_depositos_muestra_pct), "danger")}
+      ${mini("Branch network share", formatPct(summary.cuota_sucursales_pct), number(summary.cuota_sucursales_pct), "ok")}
     `);
   }
 
   function mini(title, value, pct, mood) {
     const width = Math.max(0, Math.min(100, number(pct)));
-    const fill = mood === "ok" ? colors.green : mood === "warn" ? colors.amber : colors.red;
+    const fill = mood === "ok" ? colors.icon : mood === "warn" ? colors.amber : colors.danger;
     return `
       <article class="mini-card">
         <span>${escapeHtml(title)}</span>
@@ -689,7 +908,7 @@
       const cells = rows.map(function (row) {
         const value = number(row[metric[1]]);
         const width = maxima[metric[1]] ? (value / maxima[metric[1]]) * 100 : 0;
-        const color = row.es_propia ? colors.red : row.color || colors.gray;
+        const color = row.es_propia ? colors.primary : colors.muted;
         return `
           <td>
             <div class="matrix-bar">
@@ -748,6 +967,8 @@
           if (mode === "branches") {
             // Branch: cobertura fija de 15 km
             addCoverageHeat(map, position, 15000, "branch");
+          } else if (mode === "subagents") {
+            addCoverageHeat(map, position, 1800, "subagent", props);
           } else if (mode === "planning") {
             // Planning: cobertura moderada
             addCoverageHeat(map, position, 10000, "planning", props);
@@ -761,9 +982,10 @@
             props.es_propia === true ||
             props.capa === "sucursales" ||
             props.capa === "atms" ||
+            props.capa === "subagentes" ||
             props.capa === "propia";
 
-          const pinColor = ownPoint ? "#e31837" : "#8a8f98";
+          const pinColor = ownPoint ? colors.primary : colors.muted;
           const pinLabel = pinText(props, mode);
 
           const marker = new google.maps.Marker({
@@ -780,11 +1002,11 @@
 
           marker.addListener("click", function () {
             const extraCoverage = mode === "branches"
-              ? "<br><span style='font-size:12px;color:#555'>Coverage radius: 5 km</span>"
+              ? "<br><span style='font-size:12px;color:#929C92'>Coverage radius: 5 km</span>"
               : "";
 
             info.setContent(`
-              <div style="color:#111;min-width:180px">
+              <div style="color:#101410;min-width:180px">
                 <strong>${escapeHtml(props.nombre || props.codigo || "Location")}</strong><br>
                 ${escapeHtml(props.provincia || "")}<br>
                 ${escapeHtml(labelize(props.estado || props.capa || ""))}
@@ -854,7 +1076,7 @@
       radius: outerRadius,
       clickable: false,
       strokeOpacity: 0,
-      fillColor: "#ff5a1f",
+      fillColor: colors.iconBackground,
       fillOpacity: mode === "branch" ? 0.10 : 0.08,
       zIndex: 1,
     });
@@ -866,7 +1088,7 @@
       radius: midRadius,
       clickable: false,
       strokeOpacity: 0,
-      fillColor: "#ff8a1f",
+      fillColor: colors.primary,
       fillOpacity: mode === "branch" ? 0.11 : 0.10,
       zIndex: 2,
     });
@@ -878,7 +1100,7 @@
       radius: innerRadius,
       clickable: false,
       strokeOpacity: 0,
-      fillColor: "#ffe16a",
+      fillColor: colors.icon,
       fillOpacity: 0.14,
       zIndex: 3,
     });
@@ -890,7 +1112,7 @@
         center: position,
         radius: 5000,
         clickable: false,
-        strokeColor: "#ffb46a",
+        strokeColor: colors.primaryHover,
         strokeOpacity: 0.45,
         strokeWeight: 1.2,
         fillOpacity: 0,
@@ -934,7 +1156,7 @@
         center: position,
         radius,
         strokeOpacity: 0,
-        fillColor: "#ff6a2a",
+        fillColor: colors.primary,
         fillOpacity: Math.min(0.34, 0.06 + intensity / 420),
       });
     }
@@ -946,10 +1168,10 @@
         center: position,
         radius: 5000,
         clickable: false,
-        strokeColor: colors.red,
+        strokeColor: colors.primary,
         strokeOpacity: 0.65,
         strokeWeight: 1.4,
-        fillColor: "#ff6a2a",
+        fillColor: colors.primary,
         fillOpacity: 0.10,
         zIndex: 1,
       });
@@ -963,7 +1185,7 @@
           radius,
           clickable: false,
           strokeOpacity: 0,
-          fillColor: index === 0 ? "#ff8a1f" : colors.red,
+          fillColor: index === 0 ? colors.primaryHover : colors.primary,
           fillOpacity: index === 0 ? 0.055 : 0.045,
           zIndex: 2 + index,
         });
@@ -971,13 +1193,13 @@
     }
 
   function markerColor(props) {
-    if (props.capa === "competencia") return colors.gray;
-    if (props.capa === "candidatos") return colors.green;
-    if (props.estado === "OPERATIVO" || props.estado === "OPERATIVA") return colors.green;
+    if (props.capa === "competencia") return colors.muted;
+    if (props.capa === "candidatos") return colors.icon;
+    if (props.estado === "OPERATIVO" || props.estado === "OPERATIVA") return colors.icon;
     if (props.estado === "BAJO_EFECTIVO") return colors.amber;
-    if (props.estado === "MANTENIMIENTO") return colors.gray;
-    if (props.estado === "FUERA_DE_SERVICIO") return colors.red;
-    return colors.red;
+    if (props.estado === "MANTENIMIENTO") return colors.muted;
+    if (props.estado === "FUERA_DE_SERVICIO") return colors.danger;
+    return colors.danger;
   }
 
   function renderLegend(selector, items) {
@@ -1054,32 +1276,32 @@
 
   function darkMapStyle() {
     return [
-      { elementType: "geometry", stylers: [{ color: "#11161d" }] },
-      { elementType: "labels.text.stroke", stylers: [{ color: "#11161d" }] },
-      { elementType: "labels.text.fill", stylers: [{ color: "#8b95a1" }] },
+      { elementType: "geometry", stylers: [{ color: "#161C16" }] },
+      { elementType: "labels.text.stroke", stylers: [{ color: "#101410" }] },
+      { elementType: "labels.text.fill", stylers: [{ color: "#929C92" }] },
 
-      { featureType: "administrative", elementType: "geometry.stroke", stylers: [{ color: "#2b323b" }] },
-      { featureType: "administrative.province", elementType: "labels.text.fill", stylers: [{ color: "#9aa5b1" }] },
+      { featureType: "administrative", elementType: "geometry.stroke", stylers: [{ color: "#293329" }] },
+      { featureType: "administrative.province", elementType: "labels.text.fill", stylers: [{ color: "#C6CEC6" }] },
 
-      { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#161b22" }] },
+      { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#1A211A" }] },
       { featureType: "poi", stylers: [{ visibility: "off" }] },
 
-      { featureType: "road", elementType: "geometry", stylers: [{ color: "#242b33" }] },
+      { featureType: "road", elementType: "geometry", stylers: [{ color: "#232D23" }] },
       { featureType: "road", elementType: "labels", stylers: [{ visibility: "off" }] },
 
       { featureType: "transit", stylers: [{ visibility: "off" }] },
 
-      { featureType: "water", elementType: "geometry", stylers: [{ color: "#0d141b" }] },
-      { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#56616f" }] }
+      { featureType: "water", elementType: "geometry", stylers: [{ color: "#101410" }] },
+      { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#929C92" }] }
     ];
   }
 
   function statusPill(value) {
     const val = String(value || "N/A");
     let mood = "neutral";
-    if (["OPERATIVO", "OPERATIVA", "OK", "PROPUESTA", "APROBADA"].includes(val)) mood = "";
-    if (["BAJO_EFECTIVO", "EN_EVALUACION", "STALE"].includes(val)) mood = "warn";
-    if (["FUERA_DE_SERVICIO", "CERRADA", "CRITICA", "CANCELADA"].includes(val)) mood = "danger";
+    if (["OPERATIVO", "OPERATIVA", "OK", "PROPUESTA", "APROBADA", "ACTIVO", "GEOLOCALIZADO", "SUCCEEDED"].includes(val)) mood = "";
+    if (["BAJO_EFECTIVO", "EN_EVALUACION", "STALE", "PENDING", "RUNNING"].includes(val)) mood = "warn";
+    if (["FUERA_DE_SERVICIO", "CERRADA", "CRITICA", "CANCELADA", "FAILED", "INACTIVO"].includes(val)) mood = "danger";
     return `<span class="status-pill ${mood}">${escapeHtml(labelize(val))}</span>`;
   }
 
@@ -1116,6 +1338,12 @@
   function number(value) {
     const n = Number(value);
     return Number.isFinite(n) ? n : 0;
+  }
+
+  function sumValues(value) {
+    return Object.keys(value || {}).reduce(function (total, key) {
+      return total + number(value[key]);
+    }, 0);
   }
 
   function formatNumber(value, decimals) {
@@ -1181,6 +1409,26 @@
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
+  }
+
+  function formatDateTime(value) {
+    if (!value) return "Sin datos";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Sin datos";
+    return new Intl.DateTimeFormat("es-DO", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(date);
+  }
+
+  function jobDuration(job) {
+    if (!job || !job.started_at) return "—";
+    const start = new Date(job.started_at).getTime();
+    const end = job.finished_at ? new Date(job.finished_at).getTime() : Date.now();
+    const seconds = Math.max(0, Math.round((end - start) / 1000));
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}m ${seconds % 60}s`;
   }
 
   function readError(error) {

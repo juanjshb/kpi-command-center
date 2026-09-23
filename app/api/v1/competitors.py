@@ -74,7 +74,7 @@ def comparison_matrix(db: DB, user: CurrentUser, filters: DashboardFilters):
     return {
         "meta": {
             **filters.metadata(),
-            "base_cuota": "depósitos de instituciones reportadas en un corte común",
+            "base_cuota": "sucursales propias y competidoras del inventario geográfico actual",
         },
         "items": comparison(db, filters),
     }

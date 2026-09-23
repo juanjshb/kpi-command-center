@@ -45,18 +45,20 @@ La tabla de sucursales incluye fecha de la última lectura hasta el corte, si pe
 
 | Widget de `images/page3.jpg` | Endpoint |
 |---|---|
-| Sucursales, cobertura, cuota de muestra, depósitos | `GET /metrics/planning/summary` |
+| Sucursales, cobertura, cuota por número de sucursales y depósitos propios | `GET /metrics/planning/summary` |
 | Mapa propio/competencia/candidatas | `GET /geo/locations?capa=todas` |
 | Distribución de sucursales | `GET /metrics/network-density` |
 | Ranking, densidad y competidores cercanos | `GET /planning/candidates?radio_km=5` |
 | Detalles de una candidata | `GET /planning/candidates/{id}` |
 | Comparación por entidad | `GET /competitors/comparison` |
 
+La participación de mercado de planificación se calcula como sucursales de la institución / total de sucursales propias y competidoras observadas en el inventario geográfico. No utiliza depósitos, préstamos ni otros importes estimados de competidores.
+
 ## GeoJSON y mapa
 
 `GET /geo/locations` devuelve `FeatureCollection` con `features`, `total`, `limit` y `offset`. Pagina hasta reunir `total` elementos si el mapa necesita la red completa.
 
-- `capa`: `atms`, `sucursales`, `competencia`, `candidatos` o `todas`.
+- `capa`: `atms`, `sucursales`, `subagentes`, `competencia`, `candidatos` o `todas`. Los subagentes se solicitan explícitamente con `capa=subagentes`.
 - `tipo`: `ATM` o `SUCURSAL`.
 - `tipo_atm`: `DISPENSADOR` o `CDM_DEPOSITO`; aplicado exclusivamente a la capa ATM propia.
 - `bbox`: `oeste,sur,este,norte`, por ejemplo `-71.9,17.4,-68.2,20.1`.
@@ -70,6 +72,8 @@ El frontend puede consumir estos puntos con MapLibre/Leaflet/Mapbox. El backend 
 
 | Recurso | Operaciones |
 |---|---|
+| Subagentes | `GET, POST /subagents`; `GET /subagents/summary`; `GET, PATCH /subagents/{id}` |
+| Jobs | `GET /jobs`; `GET /jobs/{id}`; `POST /jobs/bhd-locations` (ADMIN/OPERATOR) |
 | Auth | `POST /auth/login`, `GET /auth/me`, `POST /auth/logout`, `POST /auth/change-password` |
 | Usuarios | `GET, POST /users`; `PATCH /users/{id}` |
 | Provincias | `GET, POST /catalogs/provinces`; `GET /catalogs/filters` |

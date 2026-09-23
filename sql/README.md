@@ -1,41 +1,69 @@
-# SQL para crear la base de datos
+# SQL del KPI Command Center
 
-Estos archivos crean la base PostgreSQL del KPI Command Center sin depender de la API.
+El directorio contiene cinco scripts ejecutables, ordenados por dependencia.
 
 ## Archivos
 
-- `00_create_database.sql`: crea el rol `kpi_user` y la base `kpi_command_center`.
-- `01_schema.sql`: crea enums, tablas, constraints, indices y registra la migracion `0001_core`.
-- `02_seed_demo.sql`: inserta datos demo para los dashboards: provincias, sucursales, ATMs, incidencias, recargas CIT, lecturas, competencia y ubicaciones candidatas.
+1. `00_database.sql`: crea el rol y la base PostgreSQL. Se ejecuta como administrador.
+2. `01_schema.sql`: crea enums, tablas, restricciones e índices hasta la revisión `0004_job_runs`.
+3. `02_functions.sql`: instala funciones auxiliares y triggers de `updated_at`.
+4. `03_sample_data.sql`: carga datos sintéticos e idempotentes para los dashboards.
+5. `04_clear.sql`: elimina los datos de muestra o, con confirmación explícita, todo el inventario de ubicaciones.
 
-## Ejecucion
-
-Desde la raiz del proyecto:
-
-```powershell
-& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -d postgres -f sql\00_create_database.sql
-& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U kpi_user -d kpi_command_center -f sql\01_schema.sql
-& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U kpi_user -d kpi_command_center -f sql\02_seed_demo.sql
-```
-
-Si `psql` esta en tu PATH, puedes usar:
+## Instalación desde cero
 
 ```powershell
-psql -U postgres -d postgres -f sql\00_create_database.sql
+psql -U postgres -d postgres -f sql\00_database.sql
 psql -U kpi_user -d kpi_command_center -f sql\01_schema.sql
-psql -U kpi_user -d kpi_command_center -f sql\02_seed_demo.sql
+psql -U kpi_user -d kpi_command_center -f sql\02_functions.sql
+psql -U kpi_user -d kpi_command_center -f sql\03_sample_data.sql
 ```
 
-## Conexion de la API
+Antes de usar `00_database.sql` fuera de desarrollo, cambia la variable
+`app_password` incluida al inicio del archivo.
 
-Usa una URL como esta en `.env`:
+## Datos de muestra
+
+`03_sample_data.sql` puede ejecutarse más de una vez. Reutiliza el inventario
+existente y sólo crea ubicaciones sintéticas si hay menos de 25 entidades por
+canal. Genera:
+
+- 150 lecturas de ATM;
+- 150 lecturas de sucursal;
+- 150 saldos diarios de sucursal;
+- 150 transacciones de subagentes;
+- estados para 25 ATM, incluidas cuatro alertas de bajo efectivo;
+- sucursales Scotiabank y ubicaciones candidatas de muestra cuando no existen.
+
+Los estados originales de los ATM quedan respaldados para que la limpieza pueda
+restaurarlos.
+
+## Limpiar únicamente los datos de muestra
+
+Este es el modo predeterminado y no necesita confirmación:
+
+```powershell
+psql -U kpi_user -d kpi_command_center -f sql\04_clear.sql
+```
+
+## Limpiar todo el inventario de ubicaciones
+
+Este modo elimina sucursales, ATM, subagentes, lecturas, saldos, incidencias,
+recargas, candidatos, competencia, cortes de mercado e instituciones. Conserva
+usuarios, jobs, provincias, funciones y estructura.
+
+```powershell
+psql -U kpi_user -d kpi_command_center `
+  -c "SET kpi.clear_scope = 'all'; SET kpi.clear_confirmation = 'BORRAR_LOCALIZACIONES';" `
+  -f sql\04_clear.sql
+```
+
+La confirmación es obligatoria; sin ella la transacción se aborta.
+
+## Conexión de la aplicación
 
 ```env
-DATABASE_URL=postgresql+psycopg://kpi_user:change_me_strong_password@127.0.0.1:5432/kpi_command_center
+DATABASE_URL=postgresql+psycopg2://kpi_user:change_me_strong_password@127.0.0.1:5432/kpi_command_center
 ```
 
-Para Docker Compose, el host debe ser `db` dentro de la red de compose.
-
-```env
-DATABASE_URL=postgresql+psycopg://kpi_user:change_me_strong_password@db:5432/kpi_command_center
-```
+En Docker Compose, usa `db` como host.

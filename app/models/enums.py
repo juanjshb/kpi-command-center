@@ -11,6 +11,7 @@ class BranchStatus(StrEnum):
     OPERATIVA = "OPERATIVA"
     MANTENIMIENTO = "MANTENIMIENTO"
     CERRADA = "CERRADA"
+    SIN_DATOS = "SIN_DATOS"
 
 
 class ATMType(StrEnum):
@@ -23,6 +24,14 @@ class ATMStatus(StrEnum):
     BAJO_EFECTIVO = "BAJO_EFECTIVO"
     FUERA_DE_SERVICIO = "FUERA_DE_SERVICIO"
     MANTENIMIENTO = "MANTENIMIENTO"
+    SIN_DATOS = "SIN_DATOS"
+
+
+class JobRunStatus(StrEnum):
+    PENDING = "PENDING"
+    RUNNING = "RUNNING"
+    SUCCEEDED = "SUCCEEDED"
+    FAILED = "FAILED"
 
 
 class Severity(StrEnum):

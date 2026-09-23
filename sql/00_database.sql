@@ -1,7 +1,7 @@
 -- Ejecutar conectado como usuario administrador de PostgreSQL, por ejemplo:
--- psql -U postgres -d postgres -f sql/00_create_database.sql
+-- psql -U postgres -d postgres -f sql/00_database.sql
 --
--- Cambia app_password antes de usar este archivo en un entorno compartido.
+-- Cambia app_password antes de usar este archivo fuera de desarrollo local.
 
 \set ON_ERROR_STOP on
 \set db_name 'kpi_command_center'
@@ -34,3 +34,5 @@ WHERE NOT EXISTS (
 GRANT CONNECT ON DATABASE :db_name TO :app_user;
 GRANT USAGE, CREATE ON SCHEMA public TO :app_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO :app_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO :app_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO :app_user;

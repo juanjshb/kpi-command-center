@@ -4,6 +4,7 @@ WORKDIR /srv/app
 COPY pyproject.toml requirements.lock ./
 RUN pip install --no-cache-dir -r requirements.lock
 COPY app ./app
+COPY scripts/scrapers/scotia_sucursales.py ./scripts/scrapers/scotia_sucursales.py
 COPY dashboard ./dashboard
 COPY alembic ./alembic
 COPY alembic.ini ./

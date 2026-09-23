@@ -13,6 +13,7 @@ dependencies = [
   "pydantic>=2.10,<3", "pydantic-settings>=2.7,<3", "email-validator>=2.2,<3",
   "PyJWT>=2.10,<3", "pwdlib[bcrypt]>=0.2,<1", "python-multipart>=0.0.20,<1",
   "python-dotenv>=1.0,<2", "tzdata>=2025.1",
+  "requests>=2.34,<3", "beautifulsoup4>=4.14,<5", "playwright>=1.55,<2",
 ]
 
 [project.optional-dependencies]

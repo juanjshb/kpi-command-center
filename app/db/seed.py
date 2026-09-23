@@ -143,14 +143,14 @@ def seed(db, as_of: date | None = None):
     db.flush()
 
     bank_ids = []
-    for i, name in enumerate(["Banco Demo", "Competidor A", "Competidor B", "Competidor C"]):
+    for i, name in enumerate(["BHD Leon", "Competidor A", "Competidor B", "Competidor C"]):
         bank_ids.append(
             add(
                 Institution,
                 "bank/" + name,
                 nombre=name,
                 es_propia=i == 0,
-                color=["#E31837", "#8A8A8A", "#E57368", "#C5C5C5"][i],
+                color=["#35C83E", "#8A8A8A", "#E57368", "#C5C5C5"][i],
             )
         )
     db.flush()

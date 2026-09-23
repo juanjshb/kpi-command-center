@@ -1,6 +1,6 @@
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
-from typing import Annotated, Generic, TypeVar
+from typing import Annotated, Any, Generic, TypeVar
 from uuid import UUID
 
 from pydantic import (
@@ -20,6 +20,7 @@ from app.models.enums import (
     BranchStatus,
     CandidateStatus,
     IncidentStatus,
+    JobRunStatus,
     LocationType,
     RefillStatus,
     Role,
@@ -156,6 +157,14 @@ class BranchCreate(Schema):
 
 
 class BranchOut(BranchCreate, Identified):
+    fuente: str | None
+    fuente_id: str | None
+    telefono: str | None
+    zona: str | None
+    horario_extendido: bool | None
+    servicios: str | None
+    horario: list[dict[str, Any]] | None
+    actualizado_fuente_en: datetime | None
     created_at: datetime
     updated_at: datetime
 
@@ -184,8 +193,86 @@ class ATMCreate(Schema):
 
 
 class ATMOut(ATMCreate, Identified):
+    fuente: str | None
+    fuente_id: str | None
+    telefono: str | None
+    zona: str | None
+    horario_extendido: bool | None
+    servicios: str | None
+    horario: list[dict[str, Any]] | None
+    actualizado_fuente_en: datetime | None
     ultima_comunicacion: datetime | None
     ultimo_mantenimiento: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class SubagentCreate(Schema):
+    codigo_unico: Code
+    nombre: Name
+    provincia: ProvinceName | None = None
+    municipio: ProvinceName | None = None
+    direccion: str = Field(min_length=1, max_length=1000)
+    telefono: str | None = Field(default=None, max_length=80)
+    zona: str | None = Field(default=None, max_length=100)
+    latitud: Lat | None = None
+    longitud: Lng | None = None
+    horario_extendido: bool | None = None
+    servicios: str | None = Field(default=None, max_length=10000)
+    horario: list[dict[str, Any]] | None = None
+    activo: bool = True
+
+    @model_validator(mode="after")
+    def coordinate_pair(self):
+        if (self.latitud is None) != (self.longitud is None):
+            raise ValueError("latitud y longitud deben enviarse juntas")
+        return self
+
+
+class SubagentOut(SubagentCreate, Identified):
+    fuente: str
+    fuente_id: str
+    actualizado_fuente_en: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class SubagentPatch(Patch):
+    nombre: Name | None = None
+    provincia: ProvinceName | None = None
+    municipio: ProvinceName | None = None
+    direccion: str | None = Field(default=None, min_length=1, max_length=1000)
+    telefono: str | None = Field(default=None, max_length=80)
+    zona: str | None = Field(default=None, max_length=100)
+    latitud: Lat | None = None
+    longitud: Lng | None = None
+    horario_extendido: bool | None = None
+    servicios: str | None = Field(default=None, max_length=10000)
+    horario: list[dict[str, Any]] | None = None
+    activo: bool | None = None
+
+
+class SubagentSummary(Schema):
+    total: int
+    activos: int
+    con_coordenadas: int
+    sin_coordenadas: int
+    horario_extendido: int
+    provincias: int
+    ultima_actualizacion_fuente: datetime | None
+
+
+class JobRunOut(Identified):
+    job_key: str
+    status: JobRunStatus
+    requested_by_id: UUID | None
+    started_at: datetime | None
+    finished_at: datetime | None
+    progress_current: int
+    progress_total: int | None
+    message: str | None
+    result: dict[str, Any] | None
+    error: str | None
     created_at: datetime
     updated_at: datetime
 

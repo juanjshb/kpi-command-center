@@ -28,6 +28,7 @@ from app.models.enums import (
     BranchStatus,
     CandidateStatus,
     IncidentStatus,
+    JobRunStatus,
     LocationType,
     RefillStatus,
     Role,
@@ -77,7 +78,16 @@ class Sucursal(UUIDMixin, TimestampMixin, Base):
     )
     total_cajeros_humanos: Mapped[int] = mapped_column(Integer, default=6)
     sla_objetivo_segundos: Mapped[int] = mapped_column(Integer, default=600)
+    fuente: Mapped[str | None] = mapped_column(String(80))
+    fuente_id: Mapped[str | None] = mapped_column(String(80))
+    telefono: Mapped[str | None] = mapped_column(String(80))
+    zona: Mapped[str | None] = mapped_column(String(100))
+    horario_extendido: Mapped[bool | None] = mapped_column(Boolean)
+    servicios: Mapped[str | None] = mapped_column(Text)
+    horario: Mapped[list | None] = mapped_column(JSON)
+    actualizado_fuente_en: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     __table_args__ = (
+        UniqueConstraint("fuente", "fuente_id"),
         CheckConstraint(
             "latitud BETWEEN -90 AND 90 AND longitud BETWEEN -180 AND 180", name="coordinates"
         ),
@@ -109,11 +119,88 @@ class ATM(UUIDMixin, TimestampMixin, Base):
     longitud: Mapped[float] = mapped_column(Float)
     ultima_comunicacion: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     ultimo_mantenimiento: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    fuente: Mapped[str | None] = mapped_column(String(80))
+    fuente_id: Mapped[str | None] = mapped_column(String(80))
+    telefono: Mapped[str | None] = mapped_column(String(80))
+    zona: Mapped[str | None] = mapped_column(String(100))
+    horario_extendido: Mapped[bool | None] = mapped_column(Boolean)
+    servicios: Mapped[str | None] = mapped_column(Text)
+    horario: Mapped[list | None] = mapped_column(JSON)
+    actualizado_fuente_en: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     __table_args__ = (
+        UniqueConstraint("fuente", "fuente_id"),
         CheckConstraint("nivel_efectivo_pct BETWEEN 0 AND 100", name="cash_percentage"),
         CheckConstraint("capacidad_efectivo > 0", name="cash_capacity"),
         CheckConstraint(
             "latitud BETWEEN -90 AND 90 AND longitud BETWEEN -180 AND 180", name="coordinates"
+        ),
+    )
+
+
+class Subagente(UUIDMixin, TimestampMixin, Base):
+    __tablename__ = "subagentes"
+    codigo_unico: Mapped[str] = mapped_column(String(40), unique=True, index=True)
+    nombre: Mapped[str] = mapped_column(String(150))
+    provincia: Mapped[str | None] = mapped_column(
+        ForeignKey("provincias.nombre", ondelete="RESTRICT"), index=True
+    )
+    municipio: Mapped[str | None] = mapped_column(String(100))
+    direccion: Mapped[str] = mapped_column(Text)
+    telefono: Mapped[str | None] = mapped_column(String(80))
+    zona: Mapped[str | None] = mapped_column(String(100))
+    latitud: Mapped[float | None] = mapped_column(Float)
+    longitud: Mapped[float | None] = mapped_column(Float)
+    horario_extendido: Mapped[bool | None] = mapped_column(Boolean)
+    servicios: Mapped[str | None] = mapped_column(Text)
+    horario: Mapped[list | None] = mapped_column(JSON)
+    fuente: Mapped[str] = mapped_column(String(80))
+    fuente_id: Mapped[str] = mapped_column(String(80))
+    actualizado_fuente_en: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    activo: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("true"))
+    __table_args__ = (
+        UniqueConstraint("fuente", "fuente_id"),
+        CheckConstraint(
+            "(latitud IS NULL AND longitud IS NULL) OR "
+            "(latitud BETWEEN -90 AND 90 AND longitud BETWEEN -180 AND 180)",
+            name="coordinates",
+        ),
+    )
+
+
+class JobRun(UUIDMixin, TimestampMixin, Base):
+    __tablename__ = "job_runs"
+    job_key: Mapped[str] = mapped_column(String(80), index=True)
+    status: Mapped[JobRunStatus] = mapped_column(
+        Enum(JobRunStatus, name="job_run_status"),
+        default=JobRunStatus.PENDING,
+        server_default=JobRunStatus.PENDING.value,
+        index=True,
+    )
+    requested_by_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    progress_current: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    progress_total: Mapped[int | None] = mapped_column(Integer)
+    message: Mapped[str | None] = mapped_column(String(255))
+    result: Mapped[dict | None] = mapped_column(JSON)
+    error: Mapped[str | None] = mapped_column(Text)
+    __table_args__ = (
+        Index(
+            "uq_job_runs_active_key",
+            "job_key",
+            unique=True,
+            postgresql_where=text("status IN ('PENDING','RUNNING')"),
+        ),
+        CheckConstraint(
+            "progress_current >= 0 AND (progress_total IS NULL OR progress_total >= progress_current)",
+            name="progress",
+        ),
+        CheckConstraint(
+            "(status IN ('PENDING','RUNNING') AND finished_at IS NULL) OR "
+            "(status IN ('SUCCEEDED','FAILED') AND finished_at IS NOT NULL)",
+            name="lifecycle",
         ),
     )
 

@@ -8,9 +8,11 @@ from app.models.entities import (
     CompetitorLocation,
     Incidencia,
     Institution,
+    JobRun,
     LogisticaRecarga,
     MarketSnapshot,
     Provincia,
+    Subagente,
     Sucursal,
     User,
 )
@@ -25,9 +27,11 @@ __all__ = [
     "CompetitorLocation",
     "Incidencia",
     "Institution",
+    "JobRun",
     "LogisticaRecarga",
     "MarketSnapshot",
     "Provincia",
+    "Subagente",
     "Sucursal",
     "User",
 ]

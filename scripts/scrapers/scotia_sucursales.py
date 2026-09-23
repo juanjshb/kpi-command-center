@@ -14,16 +14,12 @@ from urllib.parse import quote_plus, unquote
 import requests
 from bs4 import BeautifulSoup
 
-
 # =========================================================
 # CONFIGURATION
 # =========================================================
 
 SCOTIABANK_URL = (
-    "https://do.scotiabank.com/"
-    "acerca-de-scotiabank/"
-    "conectate-con-scotia/"
-    "sucursales-y-atms.html"
+    "https://do.scotiabank.com/acerca-de-scotiabank/conectate-con-scotia/sucursales-y-atms.html"
 )
 
 GOOGLE_MAPS_SEARCH_URL = "https://www.google.com/maps/search/{}"
@@ -75,6 +71,7 @@ MAPS_TIMEOUT_MS = 20_000
 # =========================================================
 # CLI
 # =========================================================
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -132,6 +129,7 @@ def parse_args() -> argparse.Namespace:
 # TEXT UTILITIES
 # =========================================================
 
+
 def clean_text(value: str | None) -> str:
     if not value:
         return ""
@@ -143,9 +141,7 @@ def normalize_text(value: str | None) -> str:
         return ""
 
     value = unicodedata.normalize("NFKD", value)
-    value = "".join(
-        char for char in value if not unicodedata.combining(char)
-    )
+    value = "".join(char for char in value if not unicodedata.combining(char))
     value = value.lower()
     value = re.sub(r"[^a-z0-9]+", " ", value)
     return value.strip()
@@ -192,9 +188,7 @@ def normalize_rd_address(value: str | None) -> str:
 
 def branch_city_hints(row: dict) -> list[str]:
     zone = normalize_text(row.get("zone"))
-    combined = normalize_text(
-        f"{row.get('name', '')} {row.get('address', '')}"
-    )
+    combined = normalize_text(f"{row.get('name', '')} {row.get('address', '')}")
 
     hints: list[str] = []
 
@@ -240,6 +234,7 @@ def branch_city_hints(row: dict) -> list[str]:
 # OFFICIAL SCOTIABANK PAGE
 # =========================================================
 
+
 def get_scotiabank_page(session: requests.Session) -> BeautifulSoup:
     print("\nDownloading official Scotiabank branch list...")
 
@@ -262,10 +257,7 @@ def get_table_headers(table) -> list[str]:
         return []
 
     header_cells = first_header_row.find_all(["th", "td"])
-    return [
-        normalize_header(clean_text(cell.get_text(" ", strip=True)))
-        for cell in header_cells
-    ]
+    return [normalize_header(clean_text(cell.get_text(" ", strip=True))) for cell in header_cells]
 
 
 def row_to_dict(headers: list[str], cells: list[str]) -> dict[str, str]:
@@ -349,6 +341,7 @@ def extract_branch_tables(soup: BeautifulSoup) -> list[dict]:
 # CACHE
 # =========================================================
 
+
 def load_cache() -> dict:
     if not CACHE_FILE.exists():
         return {}
@@ -368,6 +361,7 @@ def save_cache(cache: dict) -> None:
 # =========================================================
 # GOOGLE MAPS URL GEOLOCATION
 # =========================================================
+
 
 def is_inside_dominican_republic(lat: float, lon: float) -> bool:
     return (
@@ -432,9 +426,7 @@ def build_maps_queries(row: dict) -> list[tuple[str, str]]:
     ]
 
     for city in city_hints:
-        queries.append(
-            (f"{name}, {city}, República Dominicana", "maps_branch_name_city")
-        )
+        queries.append((f"{name}, {city}, República Dominicana", "maps_branch_name_city"))
 
     if normalized_address:
         if city_hints:
@@ -615,9 +607,7 @@ def apply_maps_result(
     row["geocode_quality"] = quality
     row["coordinate_source"] = "google_maps_browser_url"
     row["google_maps_url"] = clean_text(result.get("final_url"))
-    row["google_maps_coordinate_pattern"] = clean_text(
-        result.get("coordinate_pattern")
-    )
+    row["google_maps_coordinate_pattern"] = clean_text(result.get("coordinate_pattern"))
 
 
 def geocode_branches_with_google_maps(
@@ -698,10 +688,7 @@ def geocode_branches_with_google_maps(
                 # everything found up to this point is already on disk.
                 if checkpoint_file is not None:
                     export_csv(branches, checkpoint_file, announce=False)
-                    print(
-                        f"   -> checkpoint saved [{index}/{total}]: "
-                        f"{checkpoint_file}"
-                    )
+                    print(f"   -> checkpoint saved [{index}/{total}]: {checkpoint_file}")
 
         finally:
             context.close()
@@ -786,11 +773,7 @@ def print_branches(branches: list[dict]) -> None:
         if branch.get("latitude") is not None and branch.get("longitude") is not None:
             coords = f" | {branch['latitude']:.7f}, {branch['longitude']:.7f}"
 
-        print(
-            f"{branch['zone']:<20} | "
-            f"{branch['name']:<48} | "
-            f"{branch['address']}{coords}"
-        )
+        print(f"{branch['zone']:<20} | {branch['name']:<48} | {branch['address']}{coords}")
 
 
 def print_summary(branches: list[dict]) -> None:
@@ -822,6 +805,7 @@ def print_summary(branches: list[dict]) -> None:
 # MAIN
 # =========================================================
 
+
 def main() -> int:
     args = parse_args()
 
@@ -839,8 +823,7 @@ def main() -> int:
 
     if not branches:
         print(
-            "WARNING: no branches were extracted. "
-            "The Scotiabank page structure may have changed."
+            "WARNING: no branches were extracted. The Scotiabank page structure may have changed."
         )
         return 2
 

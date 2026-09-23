@@ -49,14 +49,14 @@
   ];
 
   const colors = {
-    red: "#e31837",
-    red2: "#ff4b5f",
-    green: "#63d084",
-    amber: "#f1a541",
-    gray: "#b9bdc7",
-    darkGrid: "rgba(255,255,255,0.12)",
-    text: "#f6f7fb",
-    muted: "#a7abb5",
+    red: "#35C83E",
+    red2: "#45D64E",
+    green: "#65BD63",
+    amber: "#D8B44C",
+    gray: "#929C92",
+    darkGrid: "rgba(198,206,198,0.12)",
+    text: "#F4F7F4",
+    muted: "#C6CEC6",
   };
 
   $(function () {
@@ -176,7 +176,7 @@
       })
       .join("");
     $("#sidebar").html(`
-      <div class="brand"><span class="brand-mark">S</span><span>Scotiabank</span></div>
+      <div class="brand"><span class="brand-mark">BHD</span><span>BHD Leon</span></div>
       <nav class="nav-list">${links}</nav>
       <div class="sidebar-bottom">
         <a class="nav-link" href="/dashboard/atm.html"><i class="bi bi-gear"></i><span>Settings</span></a>
@@ -340,7 +340,7 @@
       ["Low cash", colors.amber],
       ["Offline", colors.red],
       ["Maintenance", colors.gray],
-      ["Heat intensity", "#ff6a2a"],
+      ["Heat intensity", "#35C83E"],
     ]);
     renderCashChart(cash.items);
     renderDensityChart("#density-chart", density.items, "atms");
@@ -377,7 +377,7 @@
     renderMap("#branch-map", geo.features, "branches");
     renderLegend("#branch-map-legend", [
       ["Branch", colors.red],
-      ["Queue heat", "#ff6a2a"],
+      ["Queue heat", "#35C83E"],
       ["Current reading", colors.gray],
     ]);
     renderHourlyChart(hourly.items);
@@ -409,7 +409,7 @@
       ["Own network", colors.red],
       ["Competitor", colors.gray],
       ["Candidate", colors.green],
-      ["Coverage heat", "#ff6a2a"],
+      ["Coverage heat", "#35C83E"],
     ]);
     renderDensityChart("#planning-density-chart", density.items, "sucursales");
     renderCandidateTable(candidates.items);
@@ -470,7 +470,7 @@
         datasets: [{
           data: values,
           borderColor: colors.red2,
-          backgroundColor: "rgba(227, 24, 55, 0.25)",
+          backgroundColor: "rgba(53, 200, 62, 0.25)",
           borderWidth: 2,
           pointRadius: 0,
           fill: true,
@@ -485,7 +485,7 @@
     const grouped = groupBy(items, "provincia");
     const provinces = Object.keys(grouped).slice(0, 5);
     const labels = unique(items.map(function (item) { return item.periodo; }));
-    const palette = [colors.red, colors.green, colors.amber, "#8ad5ff", colors.gray];
+    const palette = [colors.red, colors.green, colors.red2, colors.muted, colors.gray];
     const datasets = provinces.map(function (province, index) {
       const byPeriod = indexBy(grouped[province], "periodo");
       return {
@@ -510,7 +510,7 @@
         label: "Transactions",
         data: items.map(function (item) { return item.transacciones; }),
         borderColor: colors.red2,
-        backgroundColor: "rgba(227,24,55,0.28)",
+        backgroundColor: "rgba(53,200,62,0.28)",
         fill: true,
         pointRadius: 0,
         tension: 0.3,
@@ -527,7 +527,7 @@
           label: "SLA %",
           data: items.map(function (item) { return item.cumplimiento_sla_pct; }),
           borderColor: colors.green,
-          backgroundColor: "rgba(99,208,132,0.18)",
+          backgroundColor: "rgba(101,189,99,0.18)",
           pointRadius: 0,
           tension: 0.3,
           yAxisID: "y",
@@ -536,7 +536,7 @@
           label: "Wait min",
           data: items.map(function (item) { return item.espera_promedio_minutos; }),
           borderColor: colors.red2,
-          backgroundColor: "rgba(227,24,55,0.2)",
+          backgroundColor: "rgba(53,200,62,0.2)",
           pointRadius: 0,
           tension: 0.3,
           yAxisID: "y1",
@@ -554,7 +554,7 @@
         datasets: [{
           label: "Visitors",
           data: items.map(function (item) { return item.visitantes; }),
-          backgroundColor: "rgba(227,24,55,0.88)",
+          backgroundColor: "rgba(53,200,62,0.88)",
           borderColor: colors.red2,
           borderWidth: 1,
         }],
@@ -575,7 +575,7 @@
         datasets: [{
           label: key === "atms" ? "ATMs" : "Branches",
           data: sorted.map(function (item) { return item[key]; }),
-          backgroundColor: "rgba(227,24,55,0.9)",
+          backgroundColor: "rgba(53,200,62,0.9)",
           borderColor: colors.red2,
           borderWidth: 1,
         }],
@@ -691,7 +691,7 @@
       const cells = rows.map(function (row) {
         const value = number(row[metric[1]]);
         const width = maxima[metric[1]] ? (value / maxima[metric[1]]) * 100 : 0;
-        const color = row.es_propia ? colors.red : row.color || colors.gray;
+        const color = row.es_propia ? colors.red : colors.gray;
         return `
           <td>
             <div class="matrix-bar">
@@ -812,7 +812,7 @@
       center: position,
       radius,
       strokeOpacity: 0,
-      fillColor: "#ff6a2a",
+      fillColor: colors.red,
       fillOpacity: Math.min(0.34, 0.06 + intensity / 420),
     });
   }
@@ -890,17 +890,17 @@
 
   function darkMapStyle() {
     return [
-      { elementType: "geometry", stylers: [{ color: "#1c2026" }] },
-      { elementType: "labels.text.stroke", stylers: [{ color: "#15171c" }] },
-      { elementType: "labels.text.fill", stylers: [{ color: "#b9bdc7" }] },
-      { featureType: "administrative", elementType: "geometry.stroke", stylers: [{ color: "#4a2b31" }] },
-      { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#191d22" }] },
+      { elementType: "geometry", stylers: [{ color: "#161C16" }] },
+      { elementType: "labels.text.stroke", stylers: [{ color: "#101410" }] },
+      { elementType: "labels.text.fill", stylers: [{ color: "#929C92" }] },
+      { featureType: "administrative", elementType: "geometry.stroke", stylers: [{ color: "#293329" }] },
+      { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#1A211A" }] },
       { featureType: "poi", stylers: [{ visibility: "off" }] },
-      { featureType: "road", elementType: "geometry", stylers: [{ color: "#2a2e35" }] },
+      { featureType: "road", elementType: "geometry", stylers: [{ color: "#232D23" }] },
       { featureType: "road", elementType: "labels", stylers: [{ visibility: "off" }] },
       { featureType: "transit", stylers: [{ visibility: "off" }] },
-      { featureType: "water", elementType: "geometry", stylers: [{ color: "#0c1518" }] },
-      { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#6f7885" }] },
+      { featureType: "water", elementType: "geometry", stylers: [{ color: "#101410" }] },
+      { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#929C92" }] },
     ];
   }
 

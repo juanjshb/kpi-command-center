@@ -12,5 +12,6 @@ __pycache__/
 *.log
 .coverage
 htmlcov/
-sql/
-scripts/scrapers/
+scripts/scrapers/*
+!scripts/scrapers/bhd_branches_scraper.py
+!scripts/scrapers/scotia_sucursales.py

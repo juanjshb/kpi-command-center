@@ -4,6 +4,8 @@
 
 | Tabla | Responsabilidad y claves |
 |---|---|
+| `subagentes` | Inventario de comercios aliados, ubicación opcional, horario, servicios, origen e identificador externo |
+| `job_runs` | Historial, progreso, resultado, error y usuario solicitante de cada sincronización de datos |
 | `users` | UUID, correo normalizado único, Bcrypt, rol, activación, versión JWT, bloqueo temporal |
 | `provincias` | Catálogo de provincia/región; población, área y fuente opcionales |
 | `sucursales` | Código único, provincia FK, dirección, coordenadas, estado, capacidad de atención y objetivo SLA |
@@ -23,6 +25,7 @@
 erDiagram
     PROVINCIAS ||--o{ SUCURSALES : ubica
     PROVINCIAS ||--o{ ATMS : ubica
+    PROVINCIAS o|--o{ SUBAGENTES : ubica
     SUCURSALES o|--o{ ATMS : aloja
     USERS ||--o{ INCIDENCIAS : crea
     USERS o|--o{ INCIDENCIAS : atiende
@@ -39,10 +42,13 @@ erDiagram
     PROVINCIAS ||--o{ MARKET_SNAPSHOTS : agrupa
     PROVINCIAS ||--o{ CANDIDATE_LOCATIONS : ubica
     USERS o|--o{ AUDIT_LOGS : ejecuta
+    USERS o|--o{ JOB_RUNS : solicita
 ```
 
 ## Reglas operativas
 
+- Sucursales, ATMs y subagentes importados se identifican de forma idempotente por `fuente + fuente_id`. `SIN_DATOS` separa el inventario público de BHD de la telemetría operacional.
+- Los subagentes pueden carecer de coordenadas cuando la fuente no las publica; siguen disponibles en inventario, pero no se incluyen en GeoJSON.
 - Los ATMs independientes conservan provincia, municipio y coordenadas para participar en filtros y mapas. La provincia de un ATM asociado debe coincidir con la sucursal al crearlo.
 - El efectivo tiene rango 0–100 y capacidad positiva. `BAJO_EFECTIVO` se calcula al escribir para estados que pueden operar, usando el umbral configurable (20% por defecto). Registrar efectivo no elimina una avería ni mantenimiento.
 - Las fechas operativas son `timestamptz`. Los endpoints de entrada exigen zona horaria. Las lecturas corresponden a horas completas y ya terminadas; una clave única impide contar dos veces un ATM/sucursal en una hora.
@@ -56,7 +62,7 @@ erDiagram
 
 | Indicador | Cálculo |
 |---|---|
-| Disponibilidad actual | ATMs `OPERATIVO` o `BAJO_EFECTIVO` / inventario filtrado |
+| Disponibilidad actual | ATMs `OPERATIVO` o `BAJO_EFECTIVO` / inventario filtrado con estado observado; excluye `SIN_DATOS` |
 | Uptime histórico | Suma de segundos disponibles / suma de segundos observados |
 | Utilización ATM | Suma de segundos utilizados / suma de segundos disponibles |
 | Cobertura | Provincias con presencia / provincias del catálogo filtrado; no mide población cubierta ni superficie |
